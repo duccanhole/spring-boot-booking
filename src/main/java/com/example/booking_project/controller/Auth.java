@@ -2,6 +2,7 @@ package com.example.booking_project.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,17 +32,22 @@ class SignInRequest {
 public class Auth {
 	private static final Logger logger = LoggerFactory.getLogger(Auth.class);
     private final AuthService authService;
+    private final UserService userService;
 
-    public Auth(AuthService authService) {
+    public Auth(AuthService authService, UserService userService) {
         this.authService = authService;
+        this.userService = userService;
     }
 
     @PostMapping("/sign-in")
     public Map<String, String> signIn(@RequestBody SignInRequest request) {
     	logger.debug(String.format("Login: username - %s, password - %s", request.username, request.password));
         String token = authService.login(request.username, request.password);
+        Optional<User> user = userService.getUserByPhoneOrEmai(request.username);
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
+        response.put("name", user.get().getName());
+        response.put("role", user.get().getRole());
         return response;
     }
     
@@ -56,6 +62,8 @@ public class Auth {
         Map<String, String> response = new HashMap<>();
         response.put("message", "User registered successfully");
         response.put("userId", newUser.getId().toString());
+        response.put("name", request.name);
+        response.put("role", request.role);
         return response;
     }
 }

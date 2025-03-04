@@ -6,32 +6,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Compiled and minified CSS -->
 <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 </head>
 <body class="bg-sky-100">
-	<div class="grid place-items-center h-screen">
+	<div id="app" class="grid place-items-center h-screen">
 		<div class="p-4 w-md rounded-lg bg-white shadow-lg">
 			<h4 class="text-center text-2xl font-bold text-blue-500">Đăng
 				Nhập</h4>
 
-			<form action="/login" method="POST" class="mt-4 space-y-4">
+			<div class="mt-4 space-y-4">
 				<!-- Tên đăng nhập -->
 				<div class="flex flex-col space-y-2">
 					<label for="username" class="text-blue-500 font-medium">Email
-						hoặc Số điện thoại</label> <input type="text" id="username"
-						name="username"
+						hoặc Số điện thoại</label> <input v-model="formData.username" type="text"
+						id="username" name="username"
 						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none">
 				</div>
 
 				<!-- Mật khẩu có nút ẩn/hiện -->
-				<div class="relative" x-data="{ showPassword: true }">
+				<div class="relative">
 					<label for="password" class="text-blue-500 font-medium">Mật
-						khẩu</label> <input :type="showPassword ? 'password' : 'text'" id="password" name="password"
+						khẩu</label> <input v-model="formData.password"
+						:type="showPassword ? 'password' : 'text'" id="password"
+						name="password"
 						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 pr-10 outline-none w-full">
 					<button type="button" id="toggle-password-btn"
-						class="absolute right-3 top-9 text-gray-500 hover:text-blue-600" @click="showPassword = !showPassword">
-						<svg x-show="showPassword" xmlns="http://www.w3.org/2000/svg"
+						class="absolute right-3 top-9 text-gray-500 hover:text-blue-600"
+						@click="showPassword = !showPassword">
+						<svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg"
 							fill="none" viewBox="0 0 24 24" stroke-width="1.5"
 							stroke="currentColor" class="size-6">
 						  <path stroke-linecap="round" stroke-linejoin="round"
@@ -39,27 +42,102 @@
 						  <path stroke-linecap="round" stroke-linejoin="round"
 								d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
 						</svg>
-						<svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" fill="none"
-							viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-							class="size-6">
+						<svg v-else="!showPassword" xmlns="http://www.w3.org/2000/svg"
+							fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+							stroke="currentColor" class="size-6">
 						  <path stroke-linecap="round" stroke-linejoin="round"
-													d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+								d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
 						</svg>
 					</button>
 				</div>
+				<p v-if="errorMessage" class="mt-4 text-red-500 text-center">{{
+					errorMessage }}</p>
 
 				<!-- Nút Đăng Nhập -->
 				<button type="submit"
-					class="w-full cursor-pointer mt-2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition">
-					Đăng Nhập</button>
+					class="w-full cursor-pointer mt-2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
+					:class="{
+						'bg-gray-500 black-text cursor-none': !loading
+					}"
+					@click="handleSignIn">Đăng Nhập</button>
 
 				<!-- Liên kết Đăng Ký -->
 				<p class="text-center text-gray-600">
 					Bạn chưa có tài khoản? <a href="/sign-up"
 						class="text-blue-600 hover:underline">Đăng Ký</a>
 				</p>
-			</form>
+			</div>
 		</div>
 	</div>
 </body>
 </html>
+<script>
+const { createApp, ref, reactive } = Vue
+createApp({
+	setup(){
+		const errorMsg = ref('')
+		const formData = reactive({
+			username: '',
+			password: ''
+		})
+		const errorMessage = ref("");
+		const showPassword = ref(false)
+		const validateForm = () => {
+		  errorMessage.value = ""; // Reset error
+		
+		  if (!formData.username.trim()) {
+		    errorMessage.value = "Tên đăng nhập không được để trống.";
+		    return false;
+		  }
+		
+		  if (!formData.password.trim()) {
+		    errorMessage.value = "Mật khẩu không được để trống.";
+		    return false;
+		  }
+		
+		  if (formData.password.length < 6) {
+		    errorMessage.value = "Mật khẩu phải có ít nhất 6 ký tự.";
+		    return false;
+		  }
+		
+		  return true;
+		};
+		const loading = ref(false)
+		const handleSignIn = async () => {
+			if(!validateForm()) return;
+			try {
+    		    const response = await fetch("http://localhost:8080/auth/sign-in", {
+    		      method: "POST",
+    		      headers: {
+    		        "Content-Type": "application/json",
+    		      },
+    		      body: JSON.stringify({
+    		    	  username: formData.username,
+    		    	  password: formData.password
+    		      }),
+    		    });
+
+    		    const data = await response.json();
+
+    		    if (!response.ok) {
+    		      throw new Error(data.message || "Đăng ký thất bại");
+    		    }
+
+    		    console.log("Đăng ký thành công:", data);
+    		    document.cookie = `token=${data.token}`
+    		  } catch (error) {
+    		    errorMessage.value = error.message;
+    		}
+    		loading.value = false
+		}
+		return {
+			showPassword,
+			formData,
+			loading,
+			handleSignIn,
+			errorMessage
+		}
+	}
+}).mount('#app')
+</script>
+
