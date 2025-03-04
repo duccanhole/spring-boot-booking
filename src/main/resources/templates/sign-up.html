@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Đăng ký</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Compiled and minified CSS -->
+<script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+</head>
+<body class="bg-sky-100">
+	<div id="app" class="grid place-items-center h-screen">
+		<div class="p-4 w-xl rounded-lg bg-white shadow-lg">
+			<h4 class="text-center text-2xl font-bold text-blue-500">Đăng Ký</h4>
+
+			<div class="mt-4 space-y-4">
+				<div class="flex flex-col space-y-2">
+					<label for="username" class="text-blue-500 font-medium">Tên</label>
+					<input v-model="formData.name" type="text" id="username"
+						name="username"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none">
+				</div>
+				<!-- Tên đăng nhập -->
+				<div class="flex flex-col space-y-2">
+					<label for="username" class="text-blue-500 font-medium">Email</label>
+					<input v-model="formData.email" type="email" id="username"
+						name="username"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none">
+				</div>
+				<div class="flex flex-col space-y-2">
+					<label for="username" class="text-blue-500 font-medium">Điện
+						thoại</label> <input v-model="formData.phone" type="text" id="username"
+						name="username"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none">
+				</div>
+				<!-- Mật khẩu có nút ẩn/hiện -->
+				<div class="relative">
+					<label for="password" class="text-blue-500 font-medium">Mật
+						khẩu</label> <input v-model="formData.password"
+						:type="showPassword ? 'password' : 'text'" id="password"
+						name="password"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 pr-10 outline-none w-full">
+					<button type="button" id="toggle-password-btn"
+						class="absolute right-3 top-9 text-gray-500 hover:text-blue-600"
+						@click="showPassword = !showPassword">
+						<svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg"
+							fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+							stroke="currentColor" class="size-6">
+						  <path stroke-linecap="round" stroke-linejoin="round"
+								d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+						  <path stroke-linecap="round" stroke-linejoin="round"
+								d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+						</svg>
+						<svg v-else xmlns="http://www.w3.org/2000/svg" fill="none"
+							viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+							class="size-6">
+						  <path stroke-linecap="round" stroke-linejoin="round"
+								d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+						</svg>
+					</button>
+				</div>
+				<div class="relative">
+					<label for="password" class="text-blue-500 font-medium">Xác
+						nhận mật khẩu</label> <input v-model="formData.passwordConfirm"
+						:type="showConfirmPassword ? 'password' : 'text'" id="password"
+						name="password"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 pr-10 outline-none w-full">
+					<button type="button" id="toggle-password-btn"
+						class="absolute right-3 top-9 text-gray-500 hover:text-blue-600"
+						@click="showConfirmPassword = !showConfirmPassword">
+						<svg v-if="showConfirmPassword" xmlns="http://www.w3.org/2000/svg"
+							fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+							stroke="currentColor" class="size-6">
+						  <path stroke-linecap="round" stroke-linejoin="round"
+								d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+						  <path stroke-linecap="round" stroke-linejoin="round"
+								d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+						</svg>
+						<svg v-else xmlns="http://www.w3.org/2000/svg" fill="none"
+							viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+							class="size-6">
+						  <path stroke-linecap="round" stroke-linejoin="round"
+								d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+						</svg>
+					</button>
+				</div>
+
+				<div class="flex flex-col space-y-2">
+					<span class="text-blue-600 font-medium">Bạn là</span>
+					<div class="flex items-center space-x-4">
+						<label class="flex items-center space-x-2 cursor-pointer">
+							<input v-model="formData.role" type="radio" name="userType"
+							value="USER" x-model="userType"
+							class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300">
+							<span>Người dùng</span>
+						</label> <label class="flex items-center space-x-2 cursor-pointer">
+							<input v-model="formData.role" type="radio" name="userType"
+							value="BUS-MANAGER" x-model="userType"
+							class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300">
+							<span>Nhà xe</span>
+						</label>
+					</div>
+				</div>
+				<p v-if="errorMessage" class="mt-4 text-red-500 text-center">{{
+					errorMessage }}</p>
+
+				<!-- Nút Đăng Nhập -->
+				<button
+					class="w-full cursor-pointer mt-2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
+					:class="{
+						'bg-gray-500 black-text cursor-none': loading
+					}"
+					@click="signUpHandle">Đăng Ký</button>
+
+				<!-- Liên kết Đăng Ký -->
+				<p class="text-center text-gray-600">
+					Đã có tài khoản? <a href="/sign-in"
+						class="text-blue-600 hover:underline">Đăng Nhập</a>
+				</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script>
+  const { createApp, ref, reactive } = Vue
+
+  createApp({
+    setup() {
+      const showPassword = ref(true)
+      const showConfirmPassword = ref(true)
+      const formData = reactive({
+    	  name: '',
+    	  email: '',
+    	  password: '',
+    	  role: '',
+    	  passwordConfirm: ''
+      })
+      const errorMessage = ref("");
+      const loading = ref(false)
+      const validateForm = () => {
+    	  errorMessage.value = "";
+    	  if (!formData.name) {
+    	    errorMessage.value = "Tên không được để trống";
+    	    return false;
+    	  }
+
+    	  if (!formData.email || !formData.phone) {
+    	    errorMessage.value = "Vui lòng nhập email và số điện thoại";
+    	    return false;
+    	  }
+
+    	  if (
+    	    formData.email &&
+    	    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+    	  ) {
+    	    errorMessage.value = "Email không hợp lệ";
+    	    return false;
+    	  }
+
+    	  if (formData.phone && !/^0[0-9]{9,10}$/.test(formData.phone)) {
+    	    errorMessage.value = "Số điện thoại không hợp lệ";
+    	    return false;
+    	  }
+
+    	  if (formData.password.length < 6) {
+    	    errorMessage.value = "Mật khẩu phải có ít nhất 6 ký tự";
+    	    return false;
+    	  }
+
+    	  if (formData.passwordConfirm !== formData.password) {
+    	    errorMessage.value = "Mật khẩu nhập lại không khớp";
+    	    return false;
+    	  }
+
+    	  if (!formData.role) {
+    	    errorMessage.value = "Vui lòng chọn vai trò";
+    	    return false;
+    	  }
+
+    	  errorMessage.value = ""; // No error, valid form
+    	  return true;
+    	};
+      const signUpHandle = async () => {
+    	  if(!validateForm()) return;
+    	  loading.value = true
+    	  try {
+    		    const response = await fetch("http://localhost:8080/auth/sign-up", {
+    		      method: "POST",
+    		      headers: {
+    		        "Content-Type": "application/json",
+    		      },
+    		      body: JSON.stringify({
+    		    	  name: formData.name,
+    		    	  phone: formData.phone,
+    		    	  email: formData.email,
+    		    	  role: formData.role,
+    		    	  password: formData.password
+    		      }),
+    		    });
+
+    		    const data = await response.json();
+
+    		    if (!response.ok) {
+    		      throw new Error(data.message || "Đăng ký thất bại");
+    		    }
+
+    		    console.log("Đăng ký thành công:", data);
+    		    alert("Đăng ký thành công, vui lòng đăng nhập lại để tiếp tục.")
+    		    window.location.href='/sign-in'
+    		  } catch (error) {
+    		    errorMessage.value = error.message;
+    		  }
+    	loading.value = false
+      }
+      return {
+        showPassword,
+        showConfirmPassword,
+        formData,
+        signUpHandle,
+        errorMessage,
+        loading
+      }
+    }
+  }).mount('#app')
+</script>

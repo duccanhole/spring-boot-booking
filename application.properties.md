@@ -1,7 +1,7 @@
 spring.application.name=booking-project
-spring.datasource.url=jdbc:sqlserver://DESKTOP-VTI0PN3:1433;databaseName=booking;encrypt=true;trustServerCertificate=true;
-spring.datasource.username=admin
-spring.datasource.password=123456
+spring.datasource.url=<YOUR_DATABASE_USER>
+spring.datasource.username=<YOUR_ACCOUNT_USERNAME>
+spring.datasource.password=<YOUR_ACCOUNT_PASSWORD>
 spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
 spring.jpa.database-platform=org.hibernate.dialect.SQLServerDialect
 spring.jpa.hibernate.ddl-auto=update
