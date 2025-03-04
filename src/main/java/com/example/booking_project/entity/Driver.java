@@ -47,6 +47,10 @@ public class Driver {
     public void setUser(User user) {
         this.user = user;
     }
+    
+    public void setUserId(String userId) {
+    	this.user.setId(UUID.fromString(userId));
+    }
 
     public String getLicenseNumber() {
         return licenseNumber;
