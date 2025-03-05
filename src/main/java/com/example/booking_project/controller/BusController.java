@@ -2,6 +2,7 @@ package com.example.booking_project.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.booking_project.entity.Bus;
@@ -53,7 +54,7 @@ public class BusController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Bus> getBusById(@PathVariable UUID id) {
+    public Bus getBusById(@PathVariable("id") UUID id) {
         return busService.getBusById(id);
     }
 
@@ -64,13 +65,14 @@ public class BusController {
     }
 
     @PutMapping("/{id}")
-    public Bus updateBus(@PathVariable UUID id, @RequestBody BusRequest busRequest) {
+    public Bus updateBus(@PathVariable("id") UUID id, @RequestBody BusRequest busRequest) {
     	Bus bus = new Bus(busRequest.licensePlate, busRequest.seatCapacity, busRequest.type, busRequest.status);
         return busService.updateBus(id, bus);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBus(@PathVariable UUID id) {
+    public ResponseEntity<Object> deleteBus(@PathVariable("id") UUID id) {
         busService.deleteBus(id);
+        return ResponseEntity.ok().build();
     }
 }

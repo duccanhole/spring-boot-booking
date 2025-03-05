@@ -3,11 +3,14 @@ package com.example.booking_project.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.booking_project.entity.Driver;
+import com.example.booking_project.entity.User;
 import com.example.booking_project.services.DriverService;
+import com.example.booking_project.services.UserService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.Valid;
@@ -21,8 +24,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-class DriverRequestDTO {
-
+class DriverRequest {
     @JsonProperty("user_id")
     @NotNull(message = "User ID is required.")
     public String userId;
@@ -42,44 +44,47 @@ public class DriverController {
 
     @Autowired
     private DriverService driverService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<Driver>> getAllDrivers(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(driverService.getAllDrivers(PageRequest.of(page, size)));
+    public Page<Driver> getAllDrivers(Pageable pageable) {
+        return driverService.getAllDrivers(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Driver> getDriverById(@PathVariable UUID id) {
-        Optional<Driver> driver = driverService.getDriverById(id);
-        return driver.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public Driver getDriverById(@PathVariable("id") UUID id) {
+        Driver driver = driverService.getDriverById(id);
+        return driver;
     }
-
+    
     @PostMapping
-    public ResponseEntity<Driver> createDriver(@Valid @RequestBody DriverRequestDTO driverRequest) {
+    public Driver createDriver(@RequestBody DriverRequest driverRequest) {
         Driver driver = new Driver();
-        driver.setUserId(driverRequest.userId);
+        User user = userService.getUserById(UUID.fromString(driverRequest.userId))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        driver.setUser(user);
         driver.setLicenseNumber(driverRequest.licenseNumber);
         driver.setStatus(driverRequest.status);
 
-        return ResponseEntity.ok(driverService.createDriver(driver));
+        return driverService.createDriver(driver);
     }
-
+    
     @PutMapping("/{id}")
-    public ResponseEntity<Driver> updateDriver(@PathVariable UUID id, @Valid @RequestBody DriverRequestDTO driverRequest) {
+    public Driver updateDriver(@PathVariable("id") UUID id, @RequestBody DriverRequest driverRequest) {
         Driver updatedDriver = new Driver();
-        updatedDriver.setUserId(driverRequest.userId);
+        User user = userService.getUserById(UUID.fromString(driverRequest.userId))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        updatedDriver.setUser(user);
         updatedDriver.setLicenseNumber(driverRequest.licenseNumber);
         updatedDriver.setStatus(driverRequest.status);
 
-        return driverService.updateDriver(id, updatedDriver)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return driverService.updateDriver(id, updatedDriver);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDriver(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteDriver(@PathVariable("id") UUID id) {
         driverService.deleteDriver(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

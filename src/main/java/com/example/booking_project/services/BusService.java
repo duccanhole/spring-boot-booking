@@ -22,8 +22,8 @@ public class BusService {
         return busRepository.findAll(pageable);
     }
 
-    public Optional<Bus> getBusById(UUID id) {
-        return busRepository.findById(id);
+    public Bus getBusById(UUID id) {
+        return busRepository.findById(id).orElseThrow(() -> new RuntimeException("No bus found."));
     }
 
     public Bus createBus(Bus bus) {

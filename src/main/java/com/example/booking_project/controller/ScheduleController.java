@@ -3,10 +3,17 @@ package com.example.booking_project.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.booking_project.entity.Bus;
+import com.example.booking_project.entity.Driver;
+import com.example.booking_project.entity.Route;
 import com.example.booking_project.entity.Schedule;
+import com.example.booking_project.services.BusService;
+import com.example.booking_project.services.DriverService;
+import com.example.booking_project.services.RouteService;
 import com.example.booking_project.services.ScheduleService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,12 +24,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
 @Getter
 @Setter
-class ScheduleRequestDTO {
+class ScheduleRequest {
 
     @JsonProperty("bus_id")
     @NotNull(message = "Bus ID is required.")
@@ -52,47 +61,55 @@ public class ScheduleController {
 
     @Autowired
     private ScheduleService scheduleService;
+    @Autowired 
+    private BusService busService;
+    @Autowired
+    private DriverService driverService;
+    @Autowired
+    private RouteService routeService;
+    
 
     @GetMapping
-    public ResponseEntity<Page<Schedule>> getAllSchedules(@RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(scheduleService.getAllSchedules(PageRequest.of(page, size)));
+    public Page<Schedule> getAllSchedules(Pageable pageable) {
+        return scheduleService.getAllSchedules(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Schedule> getScheduleById(@PathVariable UUID id) {
-        Optional<Schedule> schedule = scheduleService.getScheduleById(id);
-        return schedule.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public Schedule getScheduleById(@PathVariable("id") UUID id) {
+        return scheduleService.getScheduleById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Schedule> createSchedule(@Valid @RequestBody ScheduleRequestDTO scheduleRequest) {
+    public ResponseEntity<Schedule> createSchedule(@RequestBody ScheduleRequest scheduleRequest) {
         Schedule schedule = new Schedule();
-//        schedule.setBusId(scheduleRequest.getBusId());
-//        schedule.setDriverId(scheduleRequest.getDriverId());
-//        schedule.setRouteId(scheduleRequest.getRouteId());
-//        schedule.setDepartureTime(scheduleRequest.getDepartureTime());
-//        schedule.setPrice(scheduleRequest.getPrice());
-
+        Bus bus = busService.getBusById(scheduleRequest.busId);
+        Driver driver = driverService.getDriverById(scheduleRequest.driverId);
+        Route route = routeService.getRouteById(scheduleRequest.routeId);
+        schedule.setBus(bus);
+        schedule.setDriver(driver);
+        schedule.setRoute(route);
+        schedule.setDepartureTime(LocalDateTime.parse(scheduleRequest.departureTime));
+        schedule.setPrice(scheduleRequest.price);
         return ResponseEntity.ok(scheduleService.createSchedule(schedule));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Schedule> updateSchedule(@PathVariable UUID id, @Valid @RequestBody ScheduleRequestDTO scheduleRequest) {
+    public Schedule updateSchedule(@PathVariable("id") UUID id, @RequestBody ScheduleRequest scheduleRequest) {
         Schedule updatedSchedule = new Schedule();
-//        updatedSchedule.setBusId(scheduleRequest.getBusId());
-//        updatedSchedule.setDriverId(scheduleRequest.getDriverId());
-//        updatedSchedule.setRouteId(scheduleRequest.getRouteId());
-//        updatedSchedule.setDepartureTime(scheduleRequest.getDepartureTime());
-//        updatedSchedule.setPrice(scheduleRequest.getPrice());
+        Bus bus = busService.getBusById(scheduleRequest.busId);
+        Driver driver = driverService.getDriverById(scheduleRequest.driverId);
+        Route route = routeService.getRouteById(scheduleRequest.routeId);
+        updatedSchedule.setBus(bus);
+        updatedSchedule.setDriver(driver);
+        updatedSchedule.setRoute(route);
+        updatedSchedule.setDepartureTime(LocalDateTime.parse(scheduleRequest.departureTime));
+        updatedSchedule.setPrice(scheduleRequest.price);
 
-        return scheduleService.updateSchedule(id, updatedSchedule)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return scheduleService.updateSchedule(id, updatedSchedule);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteSchedule(@PathVariable("id") UUID id) {
         scheduleService.deleteSchedule(id);
         return ResponseEntity.noContent().build();
     }

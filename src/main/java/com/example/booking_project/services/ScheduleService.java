@@ -21,15 +21,15 @@ public class ScheduleService {
         return scheduleRepository.findAll(pageable);
     }
 
-    public Optional<Schedule> getScheduleById(UUID id) {
-        return scheduleRepository.findById(id);
+    public Schedule getScheduleById(UUID id) {
+        return scheduleRepository.findById(id).orElseThrow(() -> new RuntimeException("No Schedule found."));
     }
 
     public Schedule createSchedule(Schedule schedule) {
         return scheduleRepository.save(schedule);
     }
 
-    public Optional<Schedule> updateSchedule(UUID id, Schedule updatedSchedule) {
+    public Schedule updateSchedule(UUID id, Schedule updatedSchedule) {
         return scheduleRepository.findById(id).map(schedule -> {
             schedule.setBus(updatedSchedule.getBus());
             schedule.setDriver(updatedSchedule.getDriver());
@@ -37,7 +37,7 @@ public class ScheduleService {
             schedule.setDepartureTime(updatedSchedule.getDepartureTime());
             schedule.setPrice(updatedSchedule.getPrice());
             return scheduleRepository.save(schedule);
-        });
+        }).orElseThrow(() -> new RuntimeException("No Schedule found."));
     }
 
     public void deleteSchedule(UUID id) {

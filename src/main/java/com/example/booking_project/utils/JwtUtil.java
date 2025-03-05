@@ -29,7 +29,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
+                .expiration(new Date(System.currentTimeMillis() + 4000 * 60 * 60)) // 4 hour
                 .signWith(getSigningKey())
                 .compact();
     }

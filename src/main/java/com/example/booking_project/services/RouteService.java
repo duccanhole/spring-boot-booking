@@ -21,21 +21,21 @@ public class RouteService {
         return routeRepository.findAll(pageable);
     }
 
-    public Optional<Route> getRouteById(UUID id) {
-        return routeRepository.findById(id);
+    public Route getRouteById(UUID id) {
+        return routeRepository.findById(id).orElseThrow(() -> new RuntimeException("No route found."));
     }
 
     public Route createRoute(Route route) {
         return routeRepository.save(route);
     }
 
-    public Optional<Route> updateRoute(UUID id, Route updatedRoute) {
+    public Route updateRoute(UUID id, Route updatedRoute) {
         return routeRepository.findById(id).map(route -> {
             route.setDeparture(updatedRoute.getDeparture());
             route.setArrival(updatedRoute.getArrival());
             route.setTimeEstimate(updatedRoute.getTimeEstimate());
             return routeRepository.save(route);
-        });
+        }).orElseThrow(() -> new RuntimeException("No route found."));
     }
 
     public void deleteRoute(UUID id) {

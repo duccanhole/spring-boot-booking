@@ -21,20 +21,21 @@ public class DriverService {
         return driverRepository.findAll(pageable);
     }
 
-    public Optional<Driver> getDriverById(UUID id) {
-        return driverRepository.findById(id);
+    public Driver getDriverById(UUID id) {
+        return driverRepository.findById(id).orElseThrow(() -> new RuntimeException("Driver not found"));
     }
 
     public Driver createDriver(Driver driver) {
         return driverRepository.save(driver);
     }
 
-    public Optional<Driver> updateDriver(UUID id, Driver updatedDriver) {
+    public Driver updateDriver(UUID id, Driver updatedDriver) {
         return driverRepository.findById(id).map(driver -> {
+        	driver.setUser(updatedDriver.getUser());
             driver.setLicenseNumber(updatedDriver.getLicenseNumber());
             driver.setStatus(updatedDriver.getStatus());
             return driverRepository.save(driver);
-        });
+        }).orElseThrow(() -> new RuntimeException("Driver not found"));
     }
 
     public void deleteDriver(UUID id) {
