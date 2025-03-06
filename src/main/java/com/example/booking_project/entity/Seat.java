@@ -1,6 +1,8 @@
 package com.example.booking_project.entity;
 
 import jakarta.persistence.*;
+
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -18,6 +20,9 @@ public class Seat {
 
     @Column(name = "seat_number", nullable = false, length = 10)
     private String seatNumber;
+    
+    @OneToMany(mappedBy = "seat", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Booking> bookings;
 
     // Constructors
     public Seat() {}

@@ -1,6 +1,8 @@
 package com.example.booking_project.entity;
 
 import jakarta.persistence.*;
+
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,6 +23,9 @@ public class Driver {
 
     @Column(name = "status", nullable = false, length = 50)
     private String status;
+    
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Schedule> schedules;
 
     // Constructors
     public Driver() {}
