@@ -25,8 +25,8 @@ public class UserService {
     	return userRepository.findAll(pageable);
     }
 
-    public Optional<User> getUserById(UUID id) {
-        return userRepository.findById(id);
+    public User getUserById(UUID id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("No user found."));
     }
     
     public User createUser(User user) {

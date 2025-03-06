@@ -61,8 +61,7 @@ public class DriverController {
     @PostMapping
     public Driver createDriver(@RequestBody DriverRequest driverRequest) {
         Driver driver = new Driver();
-        User user = userService.getUserById(UUID.fromString(driverRequest.userId))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.getUserById(UUID.fromString(driverRequest.userId));
         driver.setUser(user);
         driver.setLicenseNumber(driverRequest.licenseNumber);
         driver.setStatus(driverRequest.status);
@@ -73,8 +72,7 @@ public class DriverController {
     @PutMapping("/{id}")
     public Driver updateDriver(@PathVariable("id") UUID id, @RequestBody DriverRequest driverRequest) {
         Driver updatedDriver = new Driver();
-        User user = userService.getUserById(UUID.fromString(driverRequest.userId))
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.getUserById(UUID.fromString(driverRequest.userId));
         updatedDriver.setUser(user);
         updatedDriver.setLicenseNumber(driverRequest.licenseNumber);
         updatedDriver.setStatus(driverRequest.status);

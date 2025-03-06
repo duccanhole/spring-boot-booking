@@ -1,7 +1,11 @@
 package com.example.booking_project.controller;
 
 import com.example.booking_project.entity.Booking;
+import com.example.booking_project.entity.Seat;
+import com.example.booking_project.entity.User;
 import com.example.booking_project.services.BookingService;
+import com.example.booking_project.services.SeatService;
+import com.example.booking_project.services.UserService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +14,7 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +24,7 @@ import java.util.UUID;
 // DTO inside the Controller file
 @Getter
 @Setter
-class BookingRequestDTO {
+class BookingRequest {
     @JsonProperty("user_id")
     @NotNull(message = "User ID is required.")
     public UUID userId;
@@ -39,40 +44,47 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private SeatService seatService;
 
     @GetMapping
-    public ResponseEntity<Page<Booking>> getAllBookings(@RequestParam(defaultValue = "0") int page,
-                                                        @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(bookingService.getAllBookings(PageRequest.of(page, size)));
+    public Page<Booking> getAllBookings(Pageable pageable) {
+        return bookingService.getAllBookings(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Booking> getBookingById(@PathVariable UUID id) {
-        Optional<Booking> booking = bookingService.getBookingById(id);
-        return booking.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public Booking getBookingById(@PathVariable("id") UUID id) {
+        return bookingService.getBookingById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Booking> createBooking(@RequestBody BookingRequestDTO bookingRequest) {
+    public Booking createBooking(@RequestBody BookingRequest bookingRequest) {
         Booking booking = new Booking();
+        User user = userService.getUserById(bookingRequest.userId);
+        Seat seat = seatService.getSeatById(bookingRequest.seatId);
         booking.setStatus(bookingRequest.status);
-
-        return ResponseEntity.ok(bookingService.createBooking(booking));
+        booking.setUser(user);
+        booking.setSeat(seat);
+        return bookingService.createBooking(booking);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Booking> updateBooking(@PathVariable UUID id, @RequestBody BookingRequestDTO bookingRequest) {
-        Booking updatedBooking = new Booking();
-        updatedBooking.setStatus(bookingRequest.status);
+    public Booking updateBooking(@PathVariable("id") UUID id, @RequestBody BookingRequest bookingRequest) {
+    	 Booking booking = new Booking();
+         User user = userService.getUserById(bookingRequest.userId);
+         Seat seat = seatService.getSeatById(bookingRequest.seatId);
+         booking.setStatus(bookingRequest.status);
+         booking.setUser(user);
+         booking.setSeat(seat);
 
-        return bookingService.updateBooking(id, updatedBooking)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return bookingService.updateBooking(id, booking);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBooking(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteBooking(@PathVariable("id") UUID id) {
         bookingService.deleteBooking(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

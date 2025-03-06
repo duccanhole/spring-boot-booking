@@ -21,20 +21,20 @@ public class SeatService {
         return seatRepository.findAll(pageable);
     }
 
-    public Optional<Seat> getSeatById(UUID id) {
-        return seatRepository.findById(id);
+    public Seat getSeatById(UUID id) {
+        return seatRepository.findById(id).orElseThrow(() -> new RuntimeException("No Seat found."));
     }
 
     public Seat createSeat(Seat seat) {
         return seatRepository.save(seat);
     }
 
-    public Optional<Seat> updateSeat(UUID id, Seat updatedSeat) {
+    public Seat updateSeat(UUID id, Seat updatedSeat) {
         return seatRepository.findById(id).map(seat -> {
-//            seat.setScheduleId(updatedSeat.getScheduleId());
+            seat.setSchedule(updatedSeat.getSchedule());
             seat.setSeatNumber(updatedSeat.getSeatNumber());
             return seatRepository.save(seat);
-        });
+        }).orElseThrow(() -> new RuntimeException("No Seat found."));
     }
 
     public void deleteSeat(UUID id) {

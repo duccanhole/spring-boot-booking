@@ -21,21 +21,21 @@ public class BookingService {
         return bookingRepository.findAll(pageable);
     }
 
-    public Optional<Booking> getBookingById(UUID id) {
-        return bookingRepository.findById(id);
+    public Booking getBookingById(UUID id) {
+        return bookingRepository.findById(id).orElseThrow(() -> new RuntimeException("No Booking found."));
     }
 
     public Booking createBooking(Booking booking) {
         return bookingRepository.save(booking);
     }
 
-    public Optional<Booking> updateBooking(UUID id, Booking updatedBooking) {
+    public Booking updateBooking(UUID id, Booking updatedBooking) {
         return bookingRepository.findById(id).map(booking -> {
-//            booking.setUserId(updatedBooking.getUserId());
-//            booking.setSeatId(updatedBooking.getSeatId());
+        	booking.setUser(updatedBooking.getUser());
+        	booking.setSeat(updatedBooking.getSeat());
             booking.setStatus(updatedBooking.getStatus());
             return bookingRepository.save(booking);
-        });
+        }).orElseThrow(() -> new RuntimeException("No booking found"));
     }
 
     public void deleteBooking(UUID id) {
