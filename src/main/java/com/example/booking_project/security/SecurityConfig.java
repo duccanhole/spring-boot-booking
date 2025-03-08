@@ -28,7 +28,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Disable CSRF for JWT
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No sessions
             .authorizeHttpRequests(auth -> auth
-            	.requestMatchers("/css/**", "/js/**", "/image/**", "/static/**").permitAll()
+            	.requestMatchers("/css/**", "/js/**", "/image/**", "/static/**", "/admin/**").permitAll()
                 .requestMatchers("/auth/sign-in", "/auth/sign-up", "/", "sign-in", "sign-up").permitAll() // Allow login & signup
                 .anyRequest().authenticated() // Require auth for other requests
             )
