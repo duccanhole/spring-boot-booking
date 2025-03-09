@@ -44,4 +44,11 @@ public class BusService {
     public void deleteBus(UUID id) {
         busRepository.deleteById(id);
     }
+    
+    public Boolean existsByLicensePlate(String licensePlate, UUID id) {
+    	return busRepository.existsByLicensePlate(licensePlate, id);
+    }
+    public Boolean existsByLicensePlate(String licensePlate) {
+    	return busRepository.existsByLicensePlate(licensePlate);
+    }
 }

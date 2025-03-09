@@ -125,6 +125,7 @@ createApp({
 
     		    console.log("Đăng ký thành công:", data);
     		    document.cookie = `token=${data.token}`
+    		    if (data.role.toLowerCase() === 'admin') window.location.href = '/admin/user'
     		  } catch (error) {
     		    errorMessage.value = error.message;
     		}

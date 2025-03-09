@@ -15,6 +15,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,20 +61,32 @@ public class BusController {
     }
 
     @PostMapping
-    public Bus createBus(@RequestBody BusRequest busRequest) {
+    public ResponseEntity<Object> createBus(@RequestBody BusRequest busRequest) {
+    	Map<String, Object> response = new HashMap<>();
+    	if(busService.existsByLicensePlate(busRequest.licensePlate)) {
+    		response.put("message", "License plate is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
     	Bus bus = new Bus(busRequest.licensePlate, busRequest.seatCapacity, busRequest.type, busRequest.status);
-        return busService.createBus(bus);
+        return ResponseEntity.ok(busService.createBus(bus));
     }
 
     @PutMapping("/{id}")
-    public Bus updateBus(@PathVariable("id") UUID id, @RequestBody BusRequest busRequest) {
+    public ResponseEntity<Object> updateBus(@PathVariable("id") UUID id, @RequestBody BusRequest busRequest) {
+    	Map<String, Object> response = new HashMap<>();
+    	if(busService.existsByLicensePlate(busRequest.licensePlate, id)) {
+    		response.put("message", "License plate is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
     	Bus bus = new Bus(busRequest.licensePlate, busRequest.seatCapacity, busRequest.type, busRequest.status);
-        return busService.updateBus(id, bus);
+        return  ResponseEntity.ok(busService.updateBus(id, bus));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteBus(@PathVariable("id") UUID id) {
         busService.deleteBus(id);
-        return ResponseEntity.ok().build();
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        return ResponseEntity.ok(response);
     }
 }

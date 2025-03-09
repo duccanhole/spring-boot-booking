@@ -51,4 +51,20 @@ public class UserService {
     public Optional<User> getUserByPhoneOrEmai(String identifier){
     	return userRepository.findByEmailOrPhone(identifier);
     }
+    
+    public Boolean isExistByEmail(String email) {
+    	return userRepository.existsByEmail(email);
+    }
+    
+    public Boolean isExistByPhone(String phone) {
+    	return userRepository.existsByPhone(phone);
+    }
+    
+    public Boolean isExistByEmail(String email, UUID id) {
+    	return userRepository.existsByEmail(email, id);
+    }
+    
+    public Boolean isExistByPhone(String phone, UUID id) {
+    	return userRepository.existsByPhone(phone, id);
+    }
 }

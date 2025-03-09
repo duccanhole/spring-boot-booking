@@ -1,0 +1,189 @@
+<!-- admin-user.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="admin-template :: common-head('Quản lý người dùng')"></head>
+  <body th:replace="admin-template :: body">
+    <div th:replace="admin-template :: content">
+      <div th:fragment="child-content">
+        <h1 class="text-xl font-bold text-center mt-4">Thêm tuyến đường</h1>
+        <div class="mx-auto mt-4 w-xl space-y-4">
+          <!-- Tên đăng nhập -->
+          <div class="flex flex-col space-y-2">
+            <label for="username" class="text-blue-500 font-medium"
+              >Điểm đi</label
+            >
+            <select
+              v-model="formData.departure"
+              type="text"
+              id="username"
+              name="username"
+              class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none"
+            >
+              <option
+                v-for="departureOpt in departureProvinces"
+                :key="'d-'+departureOpt"
+              >
+                {{departureOpt}}
+              </option>
+            </select>
+          </div>
+          <div class="flex flex-col space-y-2">
+            <label for="username" class="text-blue-500 font-medium"
+              >Điểm đến</label
+            >
+            <select
+              v-model="formData.arrival"
+              type="text"
+              id="username"
+              name="username"
+              class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none"
+            >
+              <option
+                v-for="arrivalOpt in arrivalProvinces"
+                :key="'a-'+arrivalOpt"
+              >
+                {{arrivalOpt}}
+              </option>
+            </select>
+          </div>
+          <!-- Mật khẩu có nút ẩn/hiện -->
+          <div class="relative">
+            <label for="password" class="text-blue-500 font-medium"
+              >Thời gian dự kiến</label
+            >
+            <div class="grid grid-cols-3 gap-4">
+              <input
+                v-model="timeEstimate.hour"
+                type="number"
+                min="1"
+                name="password"
+                class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 pr-10 outline-none w-full"
+              />
+              <input
+                v-model="timeEstimate.minute"
+                type="number"
+                min="1"
+                name="password"
+                class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 pr-10 outline-none w-full"
+              />
+              <input
+                v-model="timeEstimate.second"
+                type="number"
+                min="1"
+                name="password"
+                class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 pr-10 outline-none w-full"
+              />
+            </div>
+          </div>
+
+          <p v-if="errorMessage" class="mt-4 text-red-500 text-center">
+            {{ errorMessage }}
+          </p>
+
+          <!-- Nút Đăng Nhập -->
+          <div class="flex justify-center">
+            <button
+              class="w-full cursor-pointer mt-2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
+              :class="{
+						'bg-gray-500 black-text cursor-none': loading
+					}"
+              @click="createHandle"
+            >
+              Tạo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    const { createApp, ref, reactive, computed } = Vue;
+    createApp({
+      setup() {
+        const dataService = new ApiService("routes");
+        const timeEstimate = reactive({
+          hour: 0,
+          minute: 0,
+          second: 0,
+        });
+        const formData = reactive({
+          departure: "",
+          arrival: "",
+          time_estimate: "",
+        });
+        const departureProvinces = computed(() =>
+          provinces.filter((p) => p !== formData.arrival)
+        );
+        const arrivalProvinces = computed(() =>
+          provinces.filter((p) => p !== formData.departure)
+        );
+        const errorMessage = ref("");
+        const loading = ref(false);
+        const validateForm = () => {
+          errorMessage.value = "";
+          if (!formData.departure.trim()) {
+            errorMessage.value = "Điểm xuất phát không được để trống.";
+            return false;
+          }
+
+          if (!formData.arrival.trim()) {
+            errorMessage.value = "Điểm đến không được để trống.";
+            return false;
+          }
+
+          if (timeEstimate.hour < 0 || isNaN(timeEstimate.hour)) {
+            errorMessage.value =
+              "Giờ không hợp lệ. Vui lòng nhập số lớn hơn hoặc bằng 0.";
+            return false;
+          }
+          if (
+            timeEstimate.minute < 0 ||
+            timeEstimate.minute > 59 ||
+            isNaN(timeEstimate.minute)
+          ) {
+            errorMessage.value =
+              "Phút không hợp lệ. Vui lòng nhập số từ 0 đến 59.";
+            return false;
+          }
+          if (
+            timeEstimate.second < 0 ||
+            timeEstimate.second > 59 ||
+            isNaN(timeEstimate.second)
+          ) {
+            errorMessage.value =
+              "Giây không hợp lệ. Vui lòng nhập số từ 0 đến 59.";
+            return false;
+          }
+
+          errorMessage.value = ""; // Clear error if validation passes
+          return true;
+        };
+        const createHandle = async () => {
+          if (!validateForm()) return;
+          loading.value = true;
+          const hh = String(timeEstimate.hour).padStart(2, "0");
+          const mm = String(timeEstimate.minute).padStart(2, "0");
+          const ss = String(timeEstimate.second).padStart(2, "0");
+          formData.time_estimate = `${hh}:${mm}:${ss}`;
+          try {
+            await dataService.create(formData);
+            alert("Tạo thành công.");
+            window.location.href = "/admin/route";
+          } catch (error) {
+            errorMessage.value = error.message;
+          }
+          loading.value = false;
+        };
+        return {
+          formData,
+          createHandle,
+          errorMessage,
+          loading,
+          departureProvinces,
+          arrivalProvinces,
+          timeEstimate,
+        };
+      },
+    }).mount("#app");
+  </script>
+</html>

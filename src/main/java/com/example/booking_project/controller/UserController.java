@@ -14,6 +14,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,20 +63,40 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody UserRequest userRequest) {
+    public ResponseEntity<Object> createUser(@RequestBody UserRequest userRequest) {
+    	Map<String, Object> response = new HashMap<>();
+    	if(userService.isExistByPhone(userRequest.phone)) {
+    		response.put("message", "Phone is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
+    	if(userService.isExistByEmail(userRequest.email)) {
+    		response.put("message", "Email is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
     	User user = new User(userRequest.name, userRequest.email, userRequest.phone, userRequest.password, userRequest.role);
-    	return userService.createUser(user);
+    	return ResponseEntity.ok(userService.createUser(user));
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable("id") UUID id, @RequestBody UserRequest userRequest) {
+    public ResponseEntity<Object> updateUser(@PathVariable("id") UUID id, @RequestBody UserRequest userRequest) {
+    	Map<String, Object> response = new HashMap<>();
+    	if(userService.isExistByPhone(userRequest.phone, id)) {
+    		response.put("message", "Phone is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
+    	if(userService.isExistByEmail(userRequest.email, id)) {
+    		response.put("message", "Email is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
     	User user = new User(userRequest.name, userRequest.email, userRequest.phone, userRequest.password, userRequest.role);
-    	return userService.updateUser(id, user);
+    	return ResponseEntity.ok(userService.updateUser(id, user));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable("id") UUID id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok().build();
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        return ResponseEntity.ok(response);
     }
 }
