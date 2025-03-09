@@ -41,4 +41,11 @@ public class DriverService {
     public void deleteDriver(UUID id) {
         driverRepository.deleteById(id);
     }
+    
+    public Boolean existsByLicenseNumber(String licenseNumber, UUID id) {
+    	return driverRepository.existsByLicenseNumber(licenseNumber, id);
+    }
+    public Boolean existsByLicenseNumber(String licenseNumber) {
+    	return driverRepository.existsByLicenseNumber(licenseNumber);
+    }
 }

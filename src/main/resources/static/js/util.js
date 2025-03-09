@@ -33,13 +33,14 @@ class ApiService {
 
 		try {
 			const response = await fetch(url, options);
-			if (!response.ok) {
-				throw new Error(`HTTP error! Status: ${response.status}`);
+			if(!response.ok) {
+				const json = await response.json()
+				throw new Error(json.message);
 			}
 			return await response.json();
 		} catch (error) {
-			console.error("API Error:", error);
-			return null;
+			console.log(error)
+			throw error;
 		}
 	}
 
@@ -69,3 +70,27 @@ function getParam() {
 	const pathParts = window.location.pathname.split("/"); // Split by "/"
 	return pathParts[pathParts.length - 1];
 }
+
+const provinces = [
+	'An Giang', 'Bà Rịa – Vũng Tàu', 'Bạc Liêu',
+	'Bắc Giang', 'Bắc Kạn', 'Bắc Ninh',
+	'Bến Tre', 'Bình Dương', 'Bình Định',
+	'Bình Phước', 'Bình Thuận', 'Cà Mau',
+	'Cao Bằng', 'Cần Thơ', 'Đà Nẵng',
+	'Đắk Lắk', 'Đắk Nông', 'Điện Biên',
+	'Đồng Tháp', 'Gia Lai', 'Hà Giang',
+	'Hà Nam', 'Hà Nội', 'Hà Tĩnh',
+	'Hải Dương', 'Hải Dương', 'Hậu Giang',
+	'Hòa Bình', 'Thành phố Hồ Chí Minh', 'Hưng Yên',
+	'Khánh Hòa', 'Kiên Giang', 'Kon Tum',
+	'Lai Châu', 'Lạng Sơn', 'Lào Cai',
+	'Lâm Đồng', 'Long An', 'Nam Định',
+	'Nghệ An', 'Ninh Bình', 'Ninh Thuận',
+	'Phú Thọ', 'Phú Yên', 'Quảng Bình',
+	'Quảng Nam', 'Quảng Ngãi', 'Quảng Ninh',
+	'Quảng Trị', 'Sóc Trăng', 'Sơn La',
+	'Tây Ninh', 'Thái Bình', 'Thái Nguyên',
+	'Thanh Hóa', 'Thừa Thiên Huế', 'Tiền Giang',
+	'Trà Vinh', 'Tuyên Quang', 'Vĩnh Long',
+	'Vĩnh Phúc', 'Yên Bái'
+]

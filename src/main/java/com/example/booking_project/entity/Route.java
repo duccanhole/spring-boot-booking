@@ -2,6 +2,7 @@ package com.example.booking_project.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,6 +22,9 @@ public class Route {
 
     @Column(name = "time_estimate", nullable = false)
     private LocalTime timeEstimate;
+    
+    @OneToMany(mappedBy = "route", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Schedule> schedules;
 
     // Constructors
     public Route() {}

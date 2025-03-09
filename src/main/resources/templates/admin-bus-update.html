@@ -1,0 +1,157 @@
+<!-- admin-user.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="admin-template :: common-head('Quản lý người dùng')"></head>
+  <body th:replace="admin-template :: body">
+    <div th:replace="admin-template :: content">
+      <div th:fragment="child-content">
+        <h1 class="text-xl font-bold text-center mt-4">
+          Cập nhật thông tin xe bus
+        </h1>
+        <div class="mx-auto mt-4 w-xl space-y-4">
+          <!-- Tên đăng nhập -->
+          <div class="flex flex-col space-y-2">
+            <label for="username" class="text-blue-500 font-medium"
+              >Biển số xe</label
+            >
+            <input
+              v-model="formData.license_plate"
+              type="text"
+              id="username"
+              name="username"
+              class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none"
+            />
+          </div>
+          <div class="flex flex-col space-y-2">
+            <label for="username" class="text-blue-500 font-medium">Loại</label>
+            <select
+              v-model="formData.type"
+              type="text"
+              id="username"
+              name="username"
+              class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none"
+            >
+              <option value="Limousine">Limousine</option>
+              <option value="Sleeper">Giường nằm</option>
+            </select>
+          </div>
+          <!-- Mật khẩu có nút ẩn/hiện -->
+          <div class="relative">
+            <label for="password" class="text-blue-500 font-medium"
+              >Số ghế</label
+            >
+            <input
+              v-model="formData.seat_capacity"
+              type="number"
+              min="1"
+              name="password"
+              class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 pr-10 outline-none w-full"
+            />
+          </div>
+
+          <div class="flex flex-col space-y-2">
+            <span class="text-blue-600 font-medium">Trạng thái</span>
+            <select
+              id="role"
+              v-model="formData.status"
+              class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none"
+            >
+              <option value="Active">Đang hoạt động</option>
+              <option value="Inactive">Tạm dừng</option>
+            </select>
+          </div>
+          <p v-if="errorMessage" class="mt-4 text-red-500 text-center">
+            {{ errorMessage }}
+          </p>
+
+          <!-- Nút Đăng Nhập -->
+          <div class="flex justify-center">
+            <button
+              class="w-full cursor-pointer mt-2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
+              :class="{
+						'bg-gray-500 black-text cursor-none': loading
+					}"
+              @click="createHandle"
+            >
+              Lưu
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    const { createApp, ref, reactive, computed } = Vue;
+    createApp({
+      setup() {
+        const dataService = new ApiService("buses");
+        const formData = reactive({
+          license_plate: "",
+          seat_capacity: 0,
+          type: "",
+          status: "Active",
+        });
+        const errorMessage = ref("");
+        const loading = ref(false);
+        const validateForm = () => {
+          errorMessage.value = "";
+          if (!formData.license_plate.trim()) {
+            errorMessage.value = "Biển số xe không được để trống.";
+            return false;
+          }
+
+          if (!formData.type.trim()) {
+            errorMessage.value = "Loại xe không được để trống.";
+            return false;
+          }
+
+          if (!formData.status.trim()) {
+            errorMessage.value = "Trạng thái không được để trống.";
+            return false;
+          }
+
+          if (
+            !Number.isFinite(formData.seat_capacity) ||
+            formData.seat_capacity <= 0
+          ) {
+            errorMessage.value = "Số ghế phải là một số lớn hơn 0.";
+            return false;
+          }
+
+          errorMessage.value = ""; // Clear error if validation passes
+          return true;
+        };
+        const createHandle = async () => {
+          if (!validateForm()) return;
+          const id = getParam();
+          loading.value = true;
+          try {
+            await dataService.update(id, formData);
+            alert("Lưu thành công.");
+            window.location.href = "/admin/bus";
+          } catch (error) {
+            errorMessage.value = error.message;
+          }
+          loading.value = false;
+        };
+        const getDataInfo = async () => {
+          const id = getParam();
+          console.log("id: ", id);
+          const res = await dataService.getDetail(id);
+          console.log(res);
+          formData.license_plate = res.licensePlate;
+          formData.seat_capacity = res.seatCapacity;
+          formData.type = res.type;
+          formData.status = res.status;
+        };
+        getDataInfo();
+        return {
+          formData,
+          createHandle,
+          errorMessage,
+          loading,
+        };
+      },
+    }).mount("#app");
+  </script>
+</html>

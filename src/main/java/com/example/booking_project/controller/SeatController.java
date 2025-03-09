@@ -19,6 +19,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -75,8 +77,10 @@ public class SeatController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSeat(@PathVariable("id") UUID id) {
+    public ResponseEntity<Object> deleteSeat(@PathVariable("id") UUID id) {
         seatService.deleteSeat(id);
-        return ResponseEntity.ok().build();
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        return ResponseEntity.ok(response);
     }
 }

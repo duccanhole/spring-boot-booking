@@ -19,6 +19,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -59,30 +61,42 @@ public class DriverController {
     }
     
     @PostMapping
-    public Driver createDriver(@RequestBody DriverRequest driverRequest) {
+    public ResponseEntity<Object> createDriver(@RequestBody DriverRequest driverRequest) {
+    	Map<String, Object> response = new HashMap<>();
+    	if(driverService.existsByLicenseNumber(driverRequest.licenseNumber)) {
+    		response.put("message", "License number is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
         Driver driver = new Driver();
         User user = userService.getUserById(UUID.fromString(driverRequest.userId));
         driver.setUser(user);
         driver.setLicenseNumber(driverRequest.licenseNumber);
         driver.setStatus(driverRequest.status);
 
-        return driverService.createDriver(driver);
+        return ResponseEntity.ok(driverService.createDriver(driver));
     }
     
     @PutMapping("/{id}")
-    public Driver updateDriver(@PathVariable("id") UUID id, @RequestBody DriverRequest driverRequest) {
+    public ResponseEntity<Object> updateDriver(@PathVariable("id") UUID id, @RequestBody DriverRequest driverRequest) {
+    	Map<String, Object> response = new HashMap<>();
+    	if(driverService.existsByLicenseNumber(driverRequest.licenseNumber, id)) {
+    		response.put("message", "License number is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
         Driver updatedDriver = new Driver();
         User user = userService.getUserById(UUID.fromString(driverRequest.userId));
         updatedDriver.setUser(user);
         updatedDriver.setLicenseNumber(driverRequest.licenseNumber);
         updatedDriver.setStatus(driverRequest.status);
 
-        return driverService.updateDriver(id, updatedDriver);
+        return ResponseEntity.ok(driverService.updateDriver(id, updatedDriver));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDriver(@PathVariable("id") UUID id) {
+    public ResponseEntity<Object> deleteDriver(@PathVariable("id") UUID id) {
         driverService.deleteDriver(id);
-        return ResponseEntity.ok().build();
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        return ResponseEntity.ok(response);
     }
 }
