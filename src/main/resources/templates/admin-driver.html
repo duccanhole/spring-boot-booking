@@ -1,7 +1,7 @@
 <!-- admin-user.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="admin-template :: common-head('Quản lý xe Bus')"></head>
+  <head th:replace="admin-template :: common-head('Quản lý tài xế')"></head>
   <body th:replace="admin-template :: body">
     <div th:replace="admin-template :: content">
       <div th:fragment="child-content">
@@ -10,7 +10,7 @@
           <button
             class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
-            <a href="/admin/route/create">Thêm mới</a>
+            <a :href="`/admin/${entity}/create`">Thêm mới</a>
           </button>
         </div>
         <div class="overflow-x-auto rounded-lg">
@@ -59,7 +59,7 @@
                 <td class="px-4 py-2 border">
                   <div class="flex justify-center gap-2">
                     <button class="bg-blue-400 rounded-lg p-2 cursor-pointer">
-                      <a :href="'/admin/route/update/' + item.id">
+                      <a :href="`/admin/${entity}/update/${item.id}`">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           height="20px"
@@ -125,9 +125,11 @@
   </body>
   <script>
     const { createApp, ref, reactive, computed } = Vue;
+    const entity = 'driver';
+    const service = 'drivers';
     createApp({
       setup() {
-        const dataService = new ApiService("drivers");
+        const dataService = new ApiService(service);
         const headers = [
           "ID",
           "Mã người dùng",
@@ -188,6 +190,7 @@
           handlePrev,
           handleChoosePage,
           handleDelete,
+          entity
         };
       },
     }).mount("#app");

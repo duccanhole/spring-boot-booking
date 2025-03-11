@@ -48,4 +48,10 @@ public class DriverService {
     public Boolean existsByLicenseNumber(String licenseNumber) {
     	return driverRepository.existsByLicenseNumber(licenseNumber);
     }
+    public Boolean existsByUserId(UUID userId, UUID id) {
+    	return driverRepository.existsByUserId(userId, id);
+    }
+    public Boolean existsByUserId(UUID userId) {
+    	return driverRepository.existsByUserId(userId);
+    }
 }

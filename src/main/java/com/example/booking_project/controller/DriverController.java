@@ -67,6 +67,10 @@ public class DriverController {
     		response.put("message", "License number is existed");
     		return ResponseEntity.badRequest().body(response);
     	}
+    	if(driverService.existsByUserId(UUID.fromString(driverRequest.userId))) {
+    		response.put("message", "User id is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
         Driver driver = new Driver();
         User user = userService.getUserById(UUID.fromString(driverRequest.userId));
         driver.setUser(user);
@@ -81,6 +85,10 @@ public class DriverController {
     	Map<String, Object> response = new HashMap<>();
     	if(driverService.existsByLicenseNumber(driverRequest.licenseNumber, id)) {
     		response.put("message", "License number is existed");
+    		return ResponseEntity.badRequest().body(response);
+    	}
+    	if(driverService.existsByUserId(UUID.fromString(driverRequest.userId), id)) {
+    		response.put("message", "User id is existed");
     		return ResponseEntity.badRequest().body(response);
     	}
         Driver updatedDriver = new Driver();

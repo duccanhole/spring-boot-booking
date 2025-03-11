@@ -40,4 +40,12 @@ public class SeatService {
     public void deleteSeat(UUID id) {
         seatRepository.deleteById(id);
     }
+    
+    public Boolean isExistBySeatNumber(String seat, UUID id) {
+    	return seatRepository.existsBySeatNumber(seat, id);
+    }
+    
+    public Boolean isExistBySeatNumber(String seat, UUID schedule, UUID id) {
+    	return seatRepository.existsBySeatNumber(seat, schedule, id);
+    }
 }

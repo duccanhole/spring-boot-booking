@@ -57,23 +57,33 @@ public class SeatController {
     }
 
     @PostMapping
-    public Seat createSeat(@RequestBody SeatRequest seatRequest) {
+    public ResponseEntity<Object> createSeat(@RequestBody SeatRequest seatRequest) {
+    	Map<String, Object> response = new HashMap<>();
+    	if(seatService.isExistBySeatNumber(seatRequest.seatNumber, seatRequest.scheduleId)) {
+    		response.put("message", "Seat already booked.");
+    		return ResponseEntity.badRequest().body(response);
+    	}
         Seat seat = new Seat();
         Schedule schedule = scheduleService.getScheduleById(seatRequest.scheduleId);
         seat.setSchedule(schedule);
         seat.setSeatNumber(seatRequest.seatNumber);
 
-        return seatService.createSeat(seat);
+        return ResponseEntity.ok(seatService.createSeat(seat));
     }
 
     @PutMapping("/{id}")
-    public Seat updateSeat(@PathVariable("id") UUID id, @Valid @RequestBody SeatRequest seatRequest) {
+    public ResponseEntity<Object> updateSeat(@PathVariable("id") UUID id, @Valid @RequestBody SeatRequest seatRequest) {
+    	Map<String, Object> response = new HashMap<>();
+    	if(seatService.isExistBySeatNumber(seatRequest.seatNumber, seatRequest.scheduleId, id)) {
+    		response.put("message", "Seat already booked.");
+    		return ResponseEntity.badRequest().body(response);
+    	}
     	 Seat seat = new Seat();
          Schedule schedule = scheduleService.getScheduleById(seatRequest.scheduleId);
          seat.setSchedule(schedule);
          seat.setSeatNumber(seatRequest.seatNumber);
 
-        return seatService.updateSeat(id, seat);
+        return ResponseEntity.ok(seatService.updateSeat(id, seat));
     }
 
     @DeleteMapping("/{id}")
