@@ -17,4 +17,9 @@ public interface DriverRepository extends JpaRepository<Driver, UUID> {
 	boolean existsByLicenseNumber(@Param("licenseNumber") String licensePlate, @Param("id") UUID id);
     @Query("SELECT COUNT(b) > 0 FROM Driver b WHERE LOWER(b.licenseNumber) = LOWER(:licenseNumber)")
 	boolean existsByLicenseNumber(@Param("licenseNumber") String licensePlate);
+    
+    @Query("SELECT COUNT(b) > 0 FROM Driver b WHERE b.user.id = :userId AND b.id != :id")
+	boolean existsByUserId(@Param("userId") UUID userId, @Param("id") UUID id);
+    @Query("SELECT COUNT(b) > 0 FROM Driver b WHERE b.user.id = :userId")
+	boolean existsByUserId(@Param("userId") UUID userId);
 }
