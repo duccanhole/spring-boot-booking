@@ -40,30 +40,27 @@ public class Auth {
     }
 
     @PostMapping("/sign-in")
-    public Map<String, String> signIn(@RequestBody SignInRequest request) {
+    public Map<String, Object> signIn(@RequestBody SignInRequest request) {
     	logger.debug(String.format("Login: username - %s, password - %s", request.username, request.password));
         String token = authService.login(request.username, request.password);
         Optional<User> user = userService.getUserByPhoneOrEmai(request.username);
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        response.put("name", user.get().getName());
-        response.put("role", user.get().getRole());
+        response.put("user", user.get());
         return response;
     }
     
     @PostMapping("/sign-up")
-    public Map<String, String> signup(
+    public Map<String, Object> signup(
     		@RequestBody SignUpRequest request) {
     	
     	logger.debug(String.format("Sign up: name - %s, phone - %s, password - %s, role - %s", request.name, request.email, request.phone, request.password, request.role));
     	
         User newUser = authService.register(request.name, request.email, request.phone, request.password, request.role);
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "User registered successfully");
-        response.put("userId", newUser.getId().toString());
-        response.put("name", request.name);
-        response.put("role", request.role);
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("user", newUser);
         return response;
     }
 }

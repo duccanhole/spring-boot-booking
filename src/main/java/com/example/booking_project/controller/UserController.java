@@ -43,6 +43,14 @@ class UserRequest {
     public String role;
 }
 
+@Getter
+@Setter
+class PasswordRequest {
+    @NotBlank(message = "Password is required.")
+    @JsonProperty("password")
+    public String password;
+}
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -66,11 +74,11 @@ public class UserController {
     public ResponseEntity<Object> createUser(@RequestBody UserRequest userRequest) {
     	Map<String, Object> response = new HashMap<>();
     	if(userService.isExistByPhone(userRequest.phone)) {
-    		response.put("message", "Phone is existed");
+    		response.put("message", "Số điện thoại đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
     	if(userService.isExistByEmail(userRequest.email)) {
-    		response.put("message", "Email is existed");
+    		response.put("message", "Email đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
     	User user = new User(userRequest.name, userRequest.email, userRequest.phone, userRequest.password, userRequest.role);
@@ -81,11 +89,11 @@ public class UserController {
     public ResponseEntity<Object> updateUser(@PathVariable("id") UUID id, @RequestBody UserRequest userRequest) {
     	Map<String, Object> response = new HashMap<>();
     	if(userService.isExistByPhone(userRequest.phone, id)) {
-    		response.put("message", "Phone is existed");
+    		response.put("message", "Số điện thoại đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
     	if(userService.isExistByEmail(userRequest.email, id)) {
-    		response.put("message", "Email is existed");
+    		response.put("message", "Email đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
     	User user = new User(userRequest.name, userRequest.email, userRequest.phone, userRequest.password, userRequest.role);
@@ -98,5 +106,10 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         return ResponseEntity.ok(response);
+    }
+    
+    @PutMapping("/{id}/update-password")
+    public ResponseEntity<Object> updatePassword(@PathVariable("id") UUID id, @RequestBody PasswordRequest passwordRequest) {
+    	return ResponseEntity.ok(userService.updatePassword(id, passwordRequest.password));
     }
 }

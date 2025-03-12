@@ -60,7 +60,7 @@ public class SeatController {
     public ResponseEntity<Object> createSeat(@RequestBody SeatRequest seatRequest) {
     	Map<String, Object> response = new HashMap<>();
     	if(seatService.isExistBySeatNumber(seatRequest.seatNumber, seatRequest.scheduleId)) {
-    		response.put("message", "Seat already booked.");
+    		response.put("message", "Ghế ngồi này đã được đặt.");
     		return ResponseEntity.badRequest().body(response);
     	}
         Seat seat = new Seat();
@@ -70,12 +70,25 @@ public class SeatController {
 
         return ResponseEntity.ok(seatService.createSeat(seat));
     }
+    
+    @PostMapping("/check-seat")
+    public ResponseEntity<Object> checkSeat(@RequestBody SeatRequest seatRequest) {
+    	Map<String, Object> response = new HashMap<>();
+    	if(seatService.isExistBySeatNumber(seatRequest.seatNumber, seatRequest.scheduleId)) {
+    		response.put("message", "Ghế ngồi này đã được đặt.");
+    		response.put("valid", false);
+    		return ResponseEntity.ok(response);
+    	}
+        response.put("valid", "true");
+
+        return ResponseEntity.ok(response);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateSeat(@PathVariable("id") UUID id, @Valid @RequestBody SeatRequest seatRequest) {
     	Map<String, Object> response = new HashMap<>();
     	if(seatService.isExistBySeatNumber(seatRequest.seatNumber, seatRequest.scheduleId, id)) {
-    		response.put("message", "Seat already booked.");
+    		response.put("message", "Ghế ngồi này đã được đặt.");
     		return ResponseEntity.badRequest().body(response);
     	}
     	 Seat seat = new Seat();

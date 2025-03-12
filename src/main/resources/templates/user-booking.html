@@ -1,0 +1,176 @@
+<!-- admin-user.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="user-template :: common-head('Vé xe của tôi')"></head>
+<body th:replace="user-template :: body">
+	<div th:replace="user-template :: content">
+		<div th:fragment="child-content">
+			<div class="mt-4">
+				<div v-for="item in data" :key="item.id"
+					class="border border-blue-400 mb-4 rounded-lg p-4 shadow-md text-gray-800 w-full mx-auto hover:border-2 hover:shadow-lg">
+					<div class="flex items-center space-x-4">
+						<div class="text-left">
+							<div class="text-gray-600">Điểm đi</div>
+							<p class="text-lg font-bold text-gray-600">{{item.seat.schedule.route.departure}}</p>
+						</div>
+						<div class="text-center">
+							<p class="text-sm text-gray-600">•</p>
+						</div>
+						<div class="text-right">
+							<div class="text-gray-600">Điểm đến</div>
+							<p class="text-lg font-bold text-gray-600">{{item.seat.schedule.route.arrival}}</p>
+						</div>
+					</div>
+					<ul class="list-disc list-inside text-gray-600 mt-4">
+						<li>{{item.seat.schedule.bus.type}} - Biển số:
+							{{item.seat.schedule.bus.licensePlate}}</li>
+						<li>Khởi hành lúc
+							{{formatDate(item.seat.schedule.departureTime)}}</li>
+						<li>Giá vé: {{formatCurrency(item.seat.schedule.price)}}</li>
+						<li>Số ghế: {{item.seat.seatNumber}}</li>
+						<li>Mã vé: {{item.id}}</li>
+						<li>Trạng thái: <span class="rounded-lg text-sm px-2"
+							:class="statusFormat(item.status).style">{{statusFormat(item.status).text}}</span></li>
+					</ul>
+					<div v-if="item.status.toLowerCase() === 'confirmed'" class="flex justify-end">
+						<button class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow cursor-pointer" @click="generatePDF(item)">Tạo PDF</button>
+					</div>
+				</div>
+
+			</div>
+			<div v-if="totalPage > 1" class="flex justify-center mt-4">
+				<button v-if="currentPage > 0"
+					class="cursor-pointer px-4 py-2 mx-1 bg-gray-300 rounded-lg hover:bg-gray-400 cursor-pointer"
+					@click="handlePrev">Trước</button>
+				<button v-for="page in pages" :key="page"
+					class="cursor-pointer px-4 py-2 mx-1  rounded-lg"
+					:class="page === currentPage + 1 ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'"
+					@click="handleChoosePage(page)">{{page}}</button>
+				<button v-if="currentPage < totalPage-1"
+					class="cursor-pointer px-4 py-2 mx-1 bg-gray-300 rounded-lg hover:bg-gray-400"
+					@click="handleNext">Sau</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+    const { createApp, ref, reactive, computed } = Vue;
+    const entity = 'seat';
+    const service = 'seats';
+    createApp({
+      setup() {
+        const dataService = new ApiService('schedules');
+        const seatService = new ApiService('seats');
+        const bookingService = new ApiService('bookings')
+        const departure = ref('')
+        const arrival = ref('')
+        const departureProvinces = computed(() =>
+          provinces.filter((p) => p !== arrival.value)
+        );
+        const arrivalProvinces = computed(() =>
+          provinces.filter((p) => p !== departure.value)
+        );
+        const timeEstimateFormat = (time) => {
+            const [hh, mm] = time.split(":").map(num => parseInt(num, 10));
+            
+            let formattedTime = "";
+            if (hh > 0) {
+                formattedTime += `${hh} giờ `;
+            }
+            if (mm > 0) {
+                formattedTime += `${mm} phút`;
+            }
+            
+            return formattedTime.trim() || "0 giờ 0 phút";
+        }
+        const statusFormat = (status) => {
+        	switch(status.toLowerCase()) {
+        		case 'created': 
+        			return {
+        				text: 'Đã tạo',
+        				style: 'bg-blue-400 text-white'
+        			}
+        		case 'confirmed':
+        			return {
+        				text: 'Đã xác nhận',
+        				style: 'bg-green-400 text-white'
+        			}
+        		case 'canceled': 
+        			return {
+    					text: 'Đã hủy',
+    					style: 'bg-yellow-400'
+    				}
+        	}
+        }
+        const formatDate = (date) => {
+        	return new Date(date).toLocaleDateString("vi-VN", {
+        		  timeZone: "Asia/Ho_Chi_Minh",
+        		  hour: "2-digit",
+        		  minute: "2-digit",
+        		  hour12: false, // Use 24-hour format
+        		})
+        }
+        const formatCurrency = (amount) => {
+        	return new Intl.NumberFormat("vi-VN", {
+        		  style: "currency",
+        		  currency: "VND",
+        		}).format(amount);
+        }
+        const data = ref([]);
+        const totalPage = ref(0);
+        const currentPage = ref(0);
+        const pages = computed(() => {
+          const current = currentPage.value + 1;
+          const res = [currentPage.value + 1];
+          const pre = current - 1;
+          const next = current + 1;
+          if (pre >= 1) res.unshift(pre);
+          if (next <= totalPage.value) res.push(next);
+          return res;
+        });
+        const getData = async () => {
+          const user = getUserInfo()
+          const res = await bookingService.request("GET", "search-user",null,
+            `size=10&page=${currentPage.value}&userId=${user.id}`
+          );
+          data.value = res.content;
+          totalPage.value = res.pageable.pageNumber;
+          totalPage.value = res.totalPages;
+        };
+        getData()
+        const handleNext = () => {
+          currentPage.value++;
+          getData();
+        };
+        const handlePrev = () => {
+          currentPage.value--;
+          getData();
+        };
+        const handleChoosePage = (val) => {
+          currentPage.value = val - 1;
+          getData();
+        };
+        return {
+          data,
+          pages,
+          currentPage,
+          totalPage,
+          handleNext,
+          handlePrev,
+          handleChoosePage,
+          entity,
+          departure,
+          arrival,
+          departureProvinces,
+          arrivalProvinces,
+          getData,
+          timeEstimateFormat,
+          statusFormat,
+          formatDate,
+          formatCurrency,
+          generatePDF
+        };
+      },
+    }).mount("#app");
+  </script>
+</html>

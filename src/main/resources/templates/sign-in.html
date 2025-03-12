@@ -7,6 +7,7 @@
 <!-- Compiled and minified CSS -->
 <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="/js/util.js"></script>
 </head>
 </head>
 <body class="bg-sky-100">
@@ -57,7 +58,7 @@
 				<button type="submit"
 					class="w-full cursor-pointer mt-2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
 					:class="{
-						'bg-gray-500 black-text cursor-none': !loading
+						'bg-gray-500 black-text cursor-none': loading
 					}"
 					@click="handleSignIn">Đăng Nhập</button>
 
@@ -81,7 +82,7 @@ createApp({
 			password: ''
 		})
 		const errorMessage = ref("");
-		const showPassword = ref(false)
+		const showPassword = ref(true)
 		const validateForm = () => {
 		  errorMessage.value = ""; // Reset error
 		
@@ -106,26 +107,7 @@ createApp({
 		const handleSignIn = async () => {
 			if(!validateForm()) return;
 			try {
-    		    const response = await fetch("http://localhost:8080/auth/sign-in", {
-    		      method: "POST",
-    		      headers: {
-    		        "Content-Type": "application/json",
-    		      },
-    		      body: JSON.stringify({
-    		    	  username: formData.username,
-    		    	  password: formData.password
-    		      }),
-    		    });
-
-    		    const data = await response.json();
-
-    		    if (!response.ok) {
-    		      throw new Error(data.message || "Đăng ký thất bại");
-    		    }
-
-    		    console.log("Đăng ký thành công:", data);
-    		    document.cookie = `token=${data.token}`
-    		    if (data.role.toLowerCase() === 'admin') window.location.href = '/admin/user'
+    		    await signIn(formData)
     		  } catch (error) {
     		    errorMessage.value = error.message;
     		}

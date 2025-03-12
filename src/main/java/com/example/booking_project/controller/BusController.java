@@ -64,7 +64,7 @@ public class BusController {
     public ResponseEntity<Object> createBus(@RequestBody BusRequest busRequest) {
     	Map<String, Object> response = new HashMap<>();
     	if(busService.existsByLicensePlate(busRequest.licensePlate)) {
-    		response.put("message", "License plate is existed");
+    		response.put("message", "Biển số đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
     	Bus bus = new Bus(busRequest.licensePlate, busRequest.seatCapacity, busRequest.type, busRequest.status);
@@ -75,7 +75,7 @@ public class BusController {
     public ResponseEntity<Object> updateBus(@PathVariable("id") UUID id, @RequestBody BusRequest busRequest) {
     	Map<String, Object> response = new HashMap<>();
     	if(busService.existsByLicensePlate(busRequest.licensePlate, id)) {
-    		response.put("message", "License plate is existed");
+    		response.put("message", "Biển số đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
     	Bus bus = new Bus(busRequest.licensePlate, busRequest.seatCapacity, busRequest.type, busRequest.status);

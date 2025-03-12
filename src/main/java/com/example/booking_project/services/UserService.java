@@ -2,10 +2,12 @@ package com.example.booking_project.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.booking_project.entity.User;
 import com.example.booking_project.repositories.UserRepository;
+import com.example.booking_project.utils.JwtUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +18,14 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
+    public UserService(JwtUtil jwtUtil) {
+    	this.passwordEncoder = new BCryptPasswordEncoder();
+        this.jwtUtil = jwtUtil;
+    }
+    	
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -38,8 +47,17 @@ public class UserService {
             existingUser.setName(updatedUser.getName());
             existingUser.setEmail(updatedUser.getEmail());
             existingUser.setPhone(updatedUser.getPhone());
-            existingUser.setPassword(updatedUser.getPassword());
+//            existingUser.setPassword(updatedUser.getPassword());
             existingUser.setRole(updatedUser.getRole());
+            return userRepository.save(existingUser);
+        }).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    
+    public User updatePassword(UUID id, String password) {
+    	// Encrypt password
+        String encryptedPassword = passwordEncoder.encode(password);
+        return userRepository.findById(id).map(existingUser -> {
+            existingUser.setPassword(encryptedPassword);
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new RuntimeException("User not found"));
     }

@@ -64,11 +64,11 @@ public class DriverController {
     public ResponseEntity<Object> createDriver(@RequestBody DriverRequest driverRequest) {
     	Map<String, Object> response = new HashMap<>();
     	if(driverService.existsByLicenseNumber(driverRequest.licenseNumber)) {
-    		response.put("message", "License number is existed");
+    		response.put("message", "Bằng lái đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
     	if(driverService.existsByUserId(UUID.fromString(driverRequest.userId))) {
-    		response.put("message", "User id is existed");
+    		response.put("message", "Tài xế đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
         Driver driver = new Driver();
@@ -84,11 +84,11 @@ public class DriverController {
     public ResponseEntity<Object> updateDriver(@PathVariable("id") UUID id, @RequestBody DriverRequest driverRequest) {
     	Map<String, Object> response = new HashMap<>();
     	if(driverService.existsByLicenseNumber(driverRequest.licenseNumber, id)) {
-    		response.put("message", "License number is existed");
+    		response.put("message", "Bằng lái đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
     	if(driverService.existsByUserId(UUID.fromString(driverRequest.userId), id)) {
-    		response.put("message", "User id is existed");
+    		response.put("message", "Tài xế đã tồn tại");
     		return ResponseEntity.badRequest().body(response);
     	}
         Driver updatedDriver = new Driver();

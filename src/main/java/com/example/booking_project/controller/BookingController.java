@@ -1,6 +1,7 @@
 package com.example.booking_project.controller;
 
 import com.example.booking_project.entity.Booking;
+import com.example.booking_project.entity.Schedule;
 import com.example.booking_project.entity.Seat;
 import com.example.booking_project.entity.User;
 import com.example.booking_project.services.BookingService;
@@ -90,5 +91,10 @@ public class BookingController {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/search-user")
+    public Page<Booking> searchScheduleByRoute(Pageable pageable, @RequestParam("userId") UUID userId) {
+        return bookingService.searchBookingByUser(pageable, userId);
     }
 }

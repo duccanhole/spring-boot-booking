@@ -28,8 +28,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Disable CSRF for JWT
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No sessions
             .authorizeHttpRequests(auth -> auth
-            	.requestMatchers("/css/**", "/js/**", "/image/**", "/static/**", "/admin/**").permitAll()
-                .requestMatchers("/auth/sign-in", "/auth/sign-up", "/", "sign-in", "sign-up").permitAll() // Allow login & signup
+            	.requestMatchers("/css/**", "/js/**", "/image/**", "/static/**").permitAll()
+                .requestMatchers("/auth/sign-in", "/auth/sign-up").permitAll() // Allow login & signup
+                .requestMatchers("/", "sign-in", "sign-up", "/admin/**", "/user/**", "/bus-manager/**").permitAll()
                 .anyRequest().authenticated() // Require auth for other requests
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

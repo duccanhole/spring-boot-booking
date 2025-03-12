@@ -33,16 +33,16 @@ public class AuthService {
                 return jwtUtil.generateToken(user.getEmail());
             }
         }
-        throw new RuntimeException("Invalid username or password");
+        throw new RuntimeException("Tên đăng nhập hoặc mật khẩu không hợp lệ");
     }
     
     public User register(String name, String email, String phone, String password, String role) {
         // Check if email or phone already exists
         if (userRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email already in use");
+            throw new RuntimeException("Email đã tồn tại");
         }
         if (userRepository.existsByPhone(phone)) {
-            throw new RuntimeException("Phone number already in use");
+            throw new RuntimeException("Số điện thoại đã tồn tại");
         }
         
         logger.debug("raw password: " + password);
