@@ -1,0 +1,248 @@
+<!-- admin-user.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="user-template :: common-head('Trang chủ')"></head>
+<body th:replace="user-template :: body">
+	<div th:replace="user-template :: content">
+		<div th:fragment="child-content">
+			<div class="grid grid-cols-12 gap-4 items-end">
+				<div class="flex flex-col space-y-2 col-span-5">
+					<label for="username" class="text-blue-500 font-medium">Điểm
+						đi</label> <select v-model="departure" type="text" id="username"
+						name="username"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none">
+						<option v-for="departureOpt in departureProvinces"
+							:key="'d-'+departureOpt">{{departureOpt}}</option>
+					</select>
+				</div>
+				<div class="flex flex-col space-y-2 col-span-5">
+					<label for="username" class="text-blue-500 font-medium">Điểm
+						đến</label> <select v-model="arrival" type="text" id="username"
+						name="username"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none">
+						<option v-for="arrivalOpt in arrivalProvinces"
+							:key="'a-'+arrivalOpt">{{arrivalOpt}}</option>
+					</select>
+				</div>
+				<div class="col-span-2">
+					<button
+						class="cursor-pointer rounded-md text-white bg-blue-400 w-full h-[45px]"
+						@click="getData">Tìm kiếm</button>
+				</div>
+			</div>
+			<div class="mt-4">
+				<div v-for="item in data" :key="item.id"
+					class="border border-blue-400 mb-4 rounded-lg p-4 shadow-md text-gray-800 w-full mx-auto hover:border-2 hover:shadow-lg">
+					<div class="flex items-center justify-between grow">
+						<div class="text-left">
+							<div class="text-gray-600">Điểm đi</div>
+							<p class="text-lg font-bold text-gray-600">{{item.route.departure}}</p>
+						</div>
+						<div class="text-center">
+							<p class="text-sm text-gray-600">{{timeEstimateFormat(item.route.timeEstimate)}}</p>
+						</div>
+						<div class="text-right">
+							<div class="text-gray-600">Điểm đến</div>
+							<p class="text-lg font-bold text-gray-600">{{item.route.arrival}}</p>
+						</div>
+					</div>
+					<div class="flex items-center justify-between mt-4">
+						<p class="text-gray-500">• {{item.bus.type}}</p>
+						<p class="text-green-600 font-medium">• Khởi hành lúc
+							{{formatDate(item.departureTime)}}</p>
+						<p class="text-red-500 font-semibold text-lg">{{formatCurrency(item.price)}}</p>
+					</div>
+					<div class="mt-4 text-right">
+						<button
+							class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow cursor-pointer"
+							@click="seatSelect.schedule_id = seatSelect.schedule_id === item.id ? '' : item.id">Chọn
+							ghế</button>
+					</div>
+					<div v-if="seatSelect.schedule_id === item.id" class="mt-4">
+						<div class="flex flex-wrap gap-4">
+							<button v-for="i in item.bus.seatCapacity" :key="i"
+								:class="{
+									'bg-blue-500 text-white': seatSelect.seat_number === i,
+									'bg-gray-300': seatSelect.seat_number !== i
+								}"
+								class="px-2 cursor-pointer rounded-md hover:bg-blue-500 hover:text-white"
+								@click="handlePickSeat(i)">{{i}}</button>
+						</div>
+						<div class="text-center mt-2">
+							<button
+								class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow cursor-pointer"
+								@click="handleBooking">Đặt vé</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<div v-if="data.length > 0" class="flex justify-center mt-4">
+				<button v-if="currentPage > 0"
+					class="cursor-pointer px-4 py-2 mx-1 bg-gray-300 rounded-lg hover:bg-gray-400 cursor-pointer"
+					@click="handlePrev">Trước</button>
+				<button v-for="page in pages" :key="page"
+					class="cursor-pointer px-4 py-2 mx-1  rounded-lg"
+					:class="page === currentPage + 1 ? 'bg-blue-500 text-white hover:bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'"
+					@click="handleChoosePage(page)">{{page}}</button>
+				<button v-if="currentPage < totalPage-1"
+					class="cursor-pointer px-4 py-2 mx-1 bg-gray-300 rounded-lg hover:bg-gray-400"
+					@click="handleNext">Sau</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+    const { createApp, ref, reactive, computed } = Vue;
+    const entity = 'seat';
+    const service = 'seats';
+    createApp({
+      setup() {
+        const dataService = new ApiService('schedules');
+        const seatService = new ApiService('seats');
+        const bookingService = new ApiService('bookings')
+        const departure = ref('')
+        const arrival = ref('')
+        const seatSelect = reactive({
+        	schedule_id: '',
+        	seat_number: 0
+        })
+        const departureProvinces = computed(() =>
+          provinces.filter((p) => p !== arrival.value)
+        );
+        const arrivalProvinces = computed(() =>
+          provinces.filter((p) => p !== departure.value)
+        );
+        const timeEstimateFormat = (time) => {
+            const [hh, mm] = time.split(":").map(num => parseInt(num, 10));
+            
+            let formattedTime = "";
+            if (hh > 0) {
+                formattedTime += `${hh} giờ `;
+            }
+            if (mm > 0) {
+                formattedTime += `${mm} phút`;
+            }
+            
+            return formattedTime.trim() || "0 giờ 0 phút";
+        }
+        const formatDate = (date) => {
+        	return new Date(date).toLocaleDateString("vi-VN", {
+        		  timeZone: "Asia/Ho_Chi_Minh",
+        		  hour: "2-digit",
+        		  minute: "2-digit",
+        		  hour12: false, // Use 24-hour format
+        		})
+        }
+        const formatCurrency = (amount) => {
+        	return new Intl.NumberFormat("vi-VN", {
+        		  style: "currency",
+        		  currency: "VND",
+        		}).format(amount);
+        }
+        const data = ref([]);
+        const totalPage = ref(0);
+        const currentPage = ref(0);
+        const pages = computed(() => {
+          const current = currentPage.value + 1;
+          const res = [currentPage.value + 1];
+          const pre = current - 1;
+          const next = current + 1;
+          if (pre >= 1) res.unshift(pre);
+          if (next <= totalPage.value) res.push(next);
+          return res;
+        });
+        const getData = async () => {
+          const res = await dataService.request("GET", "search-route", null,
+            `size=10&page=${currentPage.value}&departure=${departure.value}&arrival=${arrival.value}`
+          );
+          data.value = res.content.map(r => ({
+        	  ...r,
+        	  
+          }));
+          totalPage.value = res.pageable.pageNumber;
+          totalPage.value = res.totalPages;
+        };
+        const handleNext = () => {
+          currentPage.value++;
+          getData();
+        };
+        const handlePrev = () => {
+          currentPage.value--;
+          getData();
+        };
+        const handleChoosePage = (val) => {
+          currentPage.value = val - 1;
+          getData();
+        };
+        const openSeat = (id) => {
+        	if(seatSelect.schedule_id === id) {
+        		seatSelect.schedule_id = ''
+        		seatSelect.seat_number = 0
+        	}
+        	else {
+        		seatSelect.schedule_id = id
+        		seatSelect.seat_number = 0
+        	}
+        }
+        const handlePickSeat = async (seat) => {
+        	try {
+        		const res = await seatService.request("POST", "check-seat", {
+        			schedule_id: seatSelect.schedule_id,
+        			seat_number: seat
+        		}, null)
+        		if(res.valid) {
+        			seatSelect.seat_number = seat
+        		}
+        		else {
+        			alert(res.message)
+        		}
+        	}
+        	catch(e) {
+        		alert(e.message)
+        	}
+        }
+        const handleBooking = async () => {
+        	try {
+        		const check = confirm('Bạn muốn đặt ghế này ?')
+        		if(check) {
+        			const res = await seatService.create(seatSelect)
+        			const user = getUserInfo()
+        			await bookingService.create({
+        				user_id: user.id,
+        				seat_id: res.id,
+        				status: 'Created'
+        			})
+        			alert('Đặt vé thành công')
+        		}
+        	}
+        	catch(e) {
+        		alert(e.message)
+        	}
+        }
+        return {
+          data,
+          pages,
+          currentPage,
+          totalPage,
+          handleNext,
+          handlePrev,
+          handleChoosePage,
+          entity,
+          departure,
+          arrival,
+          departureProvinces,
+          arrivalProvinces,
+          getData,
+          timeEstimateFormat,
+          formatDate,
+          formatCurrency,
+          seatSelect,
+          openSeat,
+          handlePickSeat,
+          handleBooking
+        };
+      },
+    }).mount("#app");
+  </script>
+</html>

@@ -7,6 +7,7 @@
 <!-- Compiled and minified CSS -->
 <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="/js/util.js"></script>
 </head>
 </head>
 <body class="bg-sky-100">
@@ -186,27 +187,7 @@
     	  if(!validateForm()) return;
     	  loading.value = true
     	  try {
-    		    const response = await fetch("http://localhost:8080/auth/sign-up", {
-    		      method: "POST",
-    		      headers: {
-    		        "Content-Type": "application/json",
-    		      },
-    		      body: JSON.stringify({
-    		    	  name: formData.name,
-    		    	  phone: formData.phone,
-    		    	  email: formData.email,
-    		    	  role: formData.role,
-    		    	  password: formData.password
-    		      }),
-    		    });
-
-    		    const data = await response.json();
-
-    		    if (!response.ok) {
-    		      throw new Error(data.message || "Đăng ký thất bại");
-    		    }
-
-    		    console.log("Đăng ký thành công:", data);
+    		    await signUp(formData)
     		    alert("Đăng ký thành công, vui lòng đăng nhập lại để tiếp tục.")
     		    window.location.href='/sign-in'
     		  } catch (error) {

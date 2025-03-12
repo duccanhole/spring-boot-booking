@@ -117,4 +117,9 @@ public class ScheduleController {
         response.put("success", true);
         return ResponseEntity.ok(response);
     }
+    
+    @GetMapping("/search-route")
+    public Page<Schedule> searchScheduleByRoute(Pageable pageable, @RequestParam("departure") String departure, @RequestParam("arrival") String arrival) {
+        return scheduleService.searchScheduleByRoute(pageable, departure, arrival);
+    }
 }

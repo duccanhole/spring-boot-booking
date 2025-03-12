@@ -43,4 +43,9 @@ public class ScheduleService {
     public void deleteSchedule(UUID id) {
         scheduleRepository.deleteById(id);
     }
+    
+    public Page<Schedule> searchScheduleByRoute(Pageable pageable, String departure, String arrival) {
+        return scheduleRepository.searchScheduleByRoute(pageable, departure, arrival);
+    }
+
 }
