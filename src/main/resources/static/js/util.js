@@ -147,6 +147,7 @@ async function signIn(formData) {
 		const role = data.user.role.toLowerCase()
 		if (role === 'admin') window.location.href = '/admin/user'
 		if (role === 'user') window.location.href = '/user/home'
+		if (role === 'bus-manager') window.location.href = '/bus-manager/bus'
 	} catch (error) {
 		// errorMessage.value = error.message;
 		console.error(error)
@@ -175,7 +176,7 @@ function getUserInfo() {
 
 const generatePDF = (ticket) => {
 	const removeDiacritics = (str) => {
-	  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+		return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 	};
 	const formatDate = (date) => {
 		return new Date(date).toLocaleDateString("vi-VN", {
@@ -188,6 +189,9 @@ const generatePDF = (ticket) => {
 	const formatCurrency = (amount) => {
 		return new Intl.NumberFormat("de-DE").format(amount);
 	}
+	const formatBusType = (type) => {
+		return type.toLowerCase() === 'sleeper' ? 'Xe giường nằm' : 'Xe limousine'
+	}
 	const { jsPDF } = window.jspdf; // Use from global scope
 	const doc = new jsPDF();
 
@@ -196,7 +200,7 @@ const generatePDF = (ticket) => {
 	doc.text(`Ma ve: ${ticket.id}`, 10, 20);
 	doc.text(`Diem di: ${removeDiacritics(ticket.seat.schedule.route.departure)}`, 10, 30);
 	doc.text(`Diem den: ${removeDiacritics(ticket.seat.schedule.route.arrival)}`, 10, 40);
-	doc.text(`Loai xe: ${removeDiacritics(ticket.seat.schedule.bus.type)}`, 10, 50);
+	doc.text(`Loai xe: ${removeDiacritics(formatBusType(ticket.seat.schedule.bus.type))}`, 10, 50);
 	doc.text(`Bien so xe: ${removeDiacritics(ticket.seat.schedule.bus.licensePlate)}`, 10, 60);
 	doc.text(`So ghe: ${ticket.seat.seatNumber}`, 10, 70);
 	doc.text(`Khoi hanh luc: ${formatDate(ticket.seat.schedule.departureTime)}`, 10, 80);
