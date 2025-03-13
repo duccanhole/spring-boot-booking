@@ -46,9 +46,13 @@ class UserRequest {
 @Getter
 @Setter
 class PasswordRequest {
+    @NotBlank(message = "Old password is required.")
+    @JsonProperty("old_password")
+    public String oldPassword;
+    
     @NotBlank(message = "Password is required.")
-    @JsonProperty("password")
-    public String password;
+    @JsonProperty("new_password")
+    public String newPassword;
 }
 
 @RestController
@@ -110,6 +114,6 @@ public class UserController {
     
     @PutMapping("/{id}/update-password")
     public ResponseEntity<Object> updatePassword(@PathVariable("id") UUID id, @RequestBody PasswordRequest passwordRequest) {
-    	return ResponseEntity.ok(userService.updatePassword(id, passwordRequest.password));
+    	return ResponseEntity.ok(userService.updatePassword(id, passwordRequest.oldPassword, passwordRequest.newPassword));
     }
 }

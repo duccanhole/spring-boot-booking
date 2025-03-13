@@ -9,7 +9,8 @@
 <!-- Compiled and minified CSS -->
 <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="/js/util.js"></script>
 </head>
 </head>
@@ -30,21 +31,23 @@
 			<!-- Navigation Links -->
 			<nav class="mt-8">
 				<ul class="space-y-3">
-					<li><a href="/user/home"
-						class="block p-3 rounded-lg hover:bg-blue-600 hover:-translate-y-2 hover:font-semibold">Trang chủ</a></li>
-					<li><a href="/user/booking"
-						class="block p-3 rounded-lg hover:bg-blue-600 hover:-translate-y-2 hover:font-semibold">Vé xe của tôi</a></li>
-					<li><a href="/user/account"
-						class="block p-3 rounded-lg hover:bg-blue-600 hover:-translate-y-2 hover:font-semibold">Thông tin tài khoản</a></li>
-					<li><a href="/user/change-password"
-						class="block p-3 rounded-lg hover:bg-blue-600 hover:-translate-y-2 hover:font-semibold">Đổi mật khẩu</a></li>
+					<li><a href="/bus-manager/bus"
+						class="block p-3 rounded-lg hover:bg-blue-600 hover:-translate-y-2 hover:font-semibold">Quản lý xe bus</a></li>
+					<li><a href="/bus-manager/driver"
+						class="block p-3 rounded-lg hover:bg-blue-600 hover:-translate-y-2 hover:font-semibold">Quản lý tài xế</a></li>
+					<li><a href="/bus-manager/route"
+						class="block p-3 rounded-lg hover:bg-blue-600 hover:-translate-y-2 hover:font-semibold">Quản lý tuyến đường</a></li>
+					<li><a href="/bus-manager/schedule"
+						class="block p-3 rounded-lg hover:bg-blue-600 hover:-translate-y-2 hover:font-semibold">Quản lý lịch trình</a></li>
+					<li><a href="/bus-manager/booking"
+						class="block p-3 rounded-lg hover:bg-blue-600 hover:-translate-y-2 hover:font-semibold">Quản lý vé xe</a></li>
 				</ul>
 			</nav>
 
 			<!-- Logout Button -->
 			<button
-				class="w-full mt-8 p-3 bg-red-400 rounded-lg mt-auto cursor-pointer font-bold" onclick="signOut()">Đăng
-				xuất</button>
+				class="w-full mt-8 p-3 bg-red-400 rounded-lg mt-auto cursor-pointer font-bold"
+				onclick="signOut()">Đăng xuất</button>
 		</div>
 
 		<!-- Second Column (8/12) -->
@@ -58,13 +61,13 @@
 	</div>
 </body>
 <script th:fragment="initscript">
-function setUserName() {
-	const user = getUserInfo()
-	console.log(user)
-	const el = document.getElementById("user-menu-title")
-	console.log(el)
-	el.innerHTML = `Xin chào, ${user.name}`
-}
-setUserName()
+	function setUserName() {
+		const user = getUserInfo()
+		console.log(user)
+		const el = document.getElementById("user-menu-title")
+		console.log(el)
+		el.innerHTML = `Xin chào, ${user.name}`
+	}
+	setUserName()
 </script>
 </html>

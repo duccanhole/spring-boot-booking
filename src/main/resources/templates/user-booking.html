@@ -22,7 +22,7 @@
 						</div>
 					</div>
 					<ul class="list-disc list-inside text-gray-600 mt-4">
-						<li>{{item.seat.schedule.bus.type}} - Biển số:
+						<li>{{formatBusType(item.seat.schedule.bus.type)}} - Biển số:
 							{{item.seat.schedule.bus.licensePlate}}</li>
 						<li>Khởi hành lúc
 							{{formatDate(item.seat.schedule.departureTime)}}</li>
@@ -116,6 +116,9 @@
         		  currency: "VND",
         		}).format(amount);
         }
+        const formatBusType = (type) => {
+        	return type.toLowerCase() === 'sleeper' ? 'Xe giường nằm' : 'Xe limousine'
+        }
         const data = ref([]);
         const totalPage = ref(0);
         const currentPage = ref(0);
@@ -168,9 +171,11 @@
           statusFormat,
           formatDate,
           formatCurrency,
+          formatBusType,
           generatePDF
         };
       },
     }).mount("#app");
   </script>
+    <script th:replace="user-template :: initscript"></script>
 </html>
