@@ -1,11 +1,13 @@
 <!-- admin-user.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="admin-template :: common-head('Quản lý tuyến đường')"></head>
-  <body th:replace="admin-template :: body">
+  <head th:replace="bus-manager-template :: common-head('Quản lý xe tuyến đường')"></head>
+  <body th:replace="bus-manager-template :: body">
     <div th:replace="admin-template :: content">
       <div th:fragment="child-content">
-        <h1 class="text-xl font-bold text-center mt-4">Thêm tuyến đường</h1>
+        <h1 class="text-xl font-bold text-center mt-4">
+          Cập nhật thông tin tuyến đường
+        </h1>
         <div class="mx-auto mt-4 w-xl space-y-4">
           <!-- Tên đăng nhập -->
           <div class="flex flex-col space-y-2">
@@ -89,7 +91,7 @@
 					}"
               @click="createHandle"
             >
-              Tạo
+              Lưu
             </button>
           </div>
         </div>
@@ -165,15 +167,29 @@
           const mm = String(timeEstimate.minute).padStart(2, "0");
           const ss = String(timeEstimate.second).padStart(2, "0");
           formData.time_estimate = `${hh}:${mm}:${ss}`;
+          const id = getParam();
           try {
-            await dataService.create(formData);
+            await dataService.update(id, formData);
             alert("Tạo thành công.");
-            window.location.href = "/admin/route";
+            window.location.href = "/bus-manager/route";
           } catch (error) {
             errorMessage.value = error.message;
           }
           loading.value = false;
         };
+        const getDataInfo = async () => {
+          const id = getParam();
+          console.log("id: ", id);
+          const res = await dataService.getDetail(id);
+          console.log(res);
+          formData.arrival = res.arrival;
+          formData.departure = res.departure;
+          const [hour, minute, second] = res.timeEstimate.split(":");
+          timeEstimate.hour = hour;
+          timeEstimate.minute = minute;
+          timeEstimate.second;
+        };
+        getDataInfo();
         return {
           formData,
           createHandle,
@@ -186,4 +202,5 @@
       },
     }).mount("#app");
   </script>
+    <script th:replace="bus-manager-template :: initscript"></script>
 </html>

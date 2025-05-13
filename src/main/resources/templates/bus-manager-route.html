@@ -1,16 +1,16 @@
 <!-- admin-user.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="admin-template :: common-head('Quản lý tài xế')"></head>
-  <body th:replace="admin-template :: body">
+  <head th:replace="bus-manager-template :: common-head('Quản lý xe tuyến đường')"></head>
+  <body th:replace="bus-manager-template :: body">
     <div th:replace="admin-template :: content">
       <div th:fragment="child-content">
-        <h1 class="text-xl font-bold">Danh sách tài xế</h1>
+        <h1 class="text-xl font-bold">Danh sách tuyến đường</h1>
         <div class="flex justify-end mb-4">
           <button
             class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
-            <a :href="`/bus-manager/${entity}/create`">Thêm mới</a>
+            <a href="/bus-manager/route/create">Thêm mới</a>
           </button>
         </div>
         <div class="overflow-x-auto rounded-lg">
@@ -44,22 +44,13 @@
                     </svg>
                   </button>
                 </td>
-                <td class="px-4 py-2 border">
-                  <a :href="'/admin/user/update/' + item.user.id">{{item.user.id}}</a>
-                </td>
-                <td class="px-4 py-2 border">{{item.licenseNumber}}</td>
-                <td class="px-4 py-2 border">
-                  <!-- {{item.status}} -->
-                  <span
-                    class="rounded-lg text-sm px-2"
-                    :class="item.status.toLowerCase() === 'active' ? 'bg-green-400 text-white' : 'bg-yellow-300'"
-                    >{{ item.status.toLowerCase() === 'active' ? 'Đang hoạt động' : 'Tạm nghỉ' }}</span
-                  >
-                </td>
+                <td class="px-4 py-2 border">{{item.departure}}</td>
+                <td class="px-4 py-2 border">{{item.arrival}}</td>
+                <td class="px-4 py-2 border">{{item.timeEstimate}}</td>
                 <td class="px-4 py-2 border">
                   <div class="flex justify-center gap-2">
                     <button class="bg-blue-400 rounded-lg p-2 cursor-pointer">
-                      <a :href="`/admin/${entity}/update/${item.id}`">
+                      <a :href="'/bus-manager/route/update/' + item.id">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           height="20px"
@@ -125,16 +116,14 @@
   </body>
   <script>
     const { createApp, ref, reactive, computed } = Vue;
-    const entity = 'driver';
-    const service = 'drivers';
     createApp({
       setup() {
-        const dataService = new ApiService(service);
+        const dataService = new ApiService("routes");
         const headers = [
           "ID",
-          "Mã người dùng",
-          "Số bằng lái",
-          "Trạng thái",
+          "Điểm xuất phát",
+          "Điểm đến",
+          "Thời gian dự kiến",
           "Thao tác",
         ];
         const data = ref([]);
@@ -190,9 +179,9 @@
           handlePrev,
           handleChoosePage,
           handleDelete,
-          entity
         };
       },
     }).mount("#app");
   </script>
+  <script th:replace="bus-manager-template :: initscript"></script>
 </html>

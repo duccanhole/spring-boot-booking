@@ -34,4 +34,13 @@ class BusManagerPage {
 	public String getEntityPage(@PathVariable("route") String route) {
 		return String.format("bus-manager-%s", route);
 	}
+	@GetMapping("/{entity}/create")
+	public String getCreateEntityPage(@PathVariable("entity") String entity) {
+		return String.format("bus-manager-%s-create", entity);
+	}
+	
+	@GetMapping("/{entity}/update/{id}")
+	public String getUpdateEntityPage(@PathVariable("entity") String entity) {
+		return String.format("bus-manager-%s-update", entity);
+	}
 }

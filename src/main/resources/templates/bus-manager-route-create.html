@@ -1,8 +1,8 @@
 <!-- admin-user.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="admin-template :: common-head('Quản lý tuyến đường')"></head>
-  <body th:replace="admin-template :: body">
+  <head th:replace="bus-manager-template :: common-head('Quản lý tuyến đường')"></head>
+  <body th:replace="bus-manager-template :: body">
     <div th:replace="admin-template :: content">
       <div th:fragment="child-content">
         <h1 class="text-xl font-bold text-center mt-4">Thêm tuyến đường</h1>
@@ -168,7 +168,7 @@
           try {
             await dataService.create(formData);
             alert("Tạo thành công.");
-            window.location.href = "/admin/route";
+            window.location.href = "/bus-manager/route";
           } catch (error) {
             errorMessage.value = error.message;
           }
@@ -186,4 +186,5 @@
       },
     }).mount("#app");
   </script>
+  <script th:replace="bus-manager-template :: initscript"></script>
 </html>
