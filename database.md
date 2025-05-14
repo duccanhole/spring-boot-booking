@@ -75,3 +75,14 @@ CREATE TABLE BOOKINGS (
     FOREIGN KEY (seat_id) REFERENCES SEATS(id) ON DELETE NO ACTION  -- Remove cascade
 );
 ```
+### Run Docker compose
+`sudo docker pull mcr.microsoft.com/mssql/server:2019-latest`
+```
+sudo docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=StrongPass!123' \
+   -p 1433:1433 --name sql1 \
+   -d mcr.microsoft.com/mssql/server:2019-latest
+```
+### Stop Docker compose
+`sudo docker stop sql1`
+### Start Docker again
+`sudo docker start sql1`

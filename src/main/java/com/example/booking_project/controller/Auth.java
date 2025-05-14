@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.booking_project.dto.SignUpRequest;
+import com.example.booking_project.entity.dto.*;
 import com.example.booking_project.entity.User;
 import com.example.booking_project.services.AuthService;
 import com.example.booking_project.services.UserService;

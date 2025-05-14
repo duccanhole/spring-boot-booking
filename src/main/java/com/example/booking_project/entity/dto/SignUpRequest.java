@@ -1,4 +1,4 @@
-package com.example.booking_project.dto;
+package com.example.booking_project.entity.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
