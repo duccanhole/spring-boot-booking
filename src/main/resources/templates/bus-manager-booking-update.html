@@ -1,0 +1,116 @@
+<!-- admin-user.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="bus-manager-template :: common-head('Quản lý Vé')"></head>
+<body th:replace="bus-manager-template :: body">
+	<div th:replace="admin-template :: content">
+		<div th:fragment="child-content">
+			<h1 class="text-xl font-bold text-center mt-4">Cập nhật thông tin Vé</h1>
+			<div class="mx-auto mt-4 w-xl space-y-4">
+				<!-- Tên đăng nhập -->
+				<div class="flex flex-col space-y-2">
+					<label for="username" class="text-blue-500 font-medium">Mã
+						người dùng</label> <input v-model="formData.user_id"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 pr-10 outline-none w-full" />
+				</div>
+				<div class="flex flex-col space-y-2">
+					<label for="username" class="text-blue-500 font-medium">Mã ghế ngồi</label> <input v-model="formData.seat_id"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 pr-10 outline-none w-full" />
+				</div>
+				<div class="flex flex-col space-y-2">
+					<span class="text-blue-600 font-medium">Trạng thái</span> <select
+						id="role" v-model="formData.status"
+						class="border border-blue-500 focus:ring-2 focus:ring-blue-400 focus:border-blue-700 rounded-md p-2 outline-none">
+						<option value="Created">Đã tạo</option>
+						<option value="Confirmed">Đã xác nhận</option>
+						<option value="Canceled">Đã hủy</option>
+					</select>
+				</div>
+
+				<p v-if="errorMessage" class="mt-4 text-red-500 text-center">{{
+					errorMessage }}</p>
+
+				<!-- Nút Đăng Nhập -->
+				<div class="flex justify-center">
+					<button
+						class="w-full cursor-pointer mt-2 bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"
+						:class="{
+						'bg-gray-500 black-text cursor-none': loading
+					}"
+						@click="createHandle">Lưu</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+    const { createApp, ref, reactive, computed } = Vue;
+    const entity = 'booking';
+    const service = 'bookings';
+    createApp({
+      setup() {
+        const dataService = new ApiService(service);
+        const departureDate = ref('')
+        const formData = reactive({
+        	user_id: '',
+        	seat_id: '',
+        	status: 'Created'
+        });
+        const errorMessage = ref("");
+        const loading = ref(false);
+        const validateForm = () => {
+          errorMessage.value = "";
+
+          // Check required fields
+          if (!formData.user_id.trim()) {
+              errorMessage.value = "Mã người dùng không được để trống.";
+              return false;
+          }
+          if (!formData.seat_id.trim()) {
+              errorMessage.value = "Mã ghế ngồi không được để trống.";
+              return false;
+          }
+          if (!formData.status.trim()) {
+              errorMessage.value = "Trạng thái không được để trống.";
+              return false;
+          }
+
+          errorMessage.value = ""; // Clear error if validation passes
+          return true;
+        };
+        const createHandle = async () => {
+          if (!validateForm()) return;
+          loading.value = true;
+          const id = getParam();
+          try {
+            await dataService.update(id, formData);
+            alert("Lưu thành công.");
+            window.location.href = "/bus-manager/" + entity;
+          } catch (error) {
+            errorMessage.value = error.message;
+          }
+          loading.value = false;
+        };
+        const getDataInfo = async () => {
+            const id = getParam();
+            console.log("id: ", id);
+            const res = await dataService.getDetail(id);
+            console.log(res);
+            formData.user_id = res.user.id;
+            formData.seat_id = res.seat.id;
+            formData.status = res.status;
+        };
+        getDataInfo();
+
+        return {
+          formData,
+          createHandle,
+          errorMessage,
+          loading,
+          departureDate
+        };
+      },
+    }).mount("#app");
+  </script>
+  <script th:replace="bus-manager-template :: initscript"></script>
+</html>

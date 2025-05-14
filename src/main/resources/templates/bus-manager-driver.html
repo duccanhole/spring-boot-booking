@@ -1,8 +1,8 @@
 <!-- admin-user.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="admin-template :: common-head('Quản lý tài xế')"></head>
-  <body th:replace="admin-template :: body">
+  <head th:replace="bus-manager-template :: common-head('Quản lý tài xế')"></head>
+  <body th:replace="bus-manager-template :: body">
     <div th:replace="admin-template :: content">
       <div th:fragment="child-content">
         <h1 class="text-xl font-bold">Danh sách tài xế</h1>
@@ -45,7 +45,7 @@
                   </button>
                 </td>
                 <td class="px-4 py-2 border">
-                  <a :href="'/admin/user/update/' + item.user.id">{{item.user.id}}</a>
+                  {{item.user.id}}
                 </td>
                 <td class="px-4 py-2 border">{{item.licenseNumber}}</td>
                 <td class="px-4 py-2 border">
@@ -59,7 +59,7 @@
                 <td class="px-4 py-2 border">
                   <div class="flex justify-center gap-2">
                     <button class="bg-blue-400 rounded-lg p-2 cursor-pointer">
-                      <a :href="`/admin/${entity}/update/${item.id}`">
+                      <a :href="`/bus-manager/${entity}/update/${item.id}`">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           height="20px"
@@ -195,4 +195,5 @@
       },
     }).mount("#app");
   </script>
+  <script th:replace="bus-manager-template :: initscript"></script>
 </html>
